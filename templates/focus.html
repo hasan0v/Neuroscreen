@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NeuroScreen - Odaklanma Terapisi</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <img src="/static/images/logo.png" alt="NeuroScreen Logo" class="logo-image">
+        <h1>NeuroScreen</h1>
+      </div>
+      <p class="subtitle">Beyninizin gücünü keşfedin - Odaklanma Terapisi</p>
+    </div>
+  </header>
+
+  <section class="screen health-interface grid-2x2" aria-label="Sağlık odaklanma bölümleri">
+    <div class="cell hydration" data-name="first" data-category="Su">
+      <div class="icon-container">
+        <i class="fa-solid fa-glass-water"></i>
+      </div>
+      <h3>Su</h3>
+      <p>Su içme zamanı</p>
+      <div class="progress"></div>
+    </div>
+    
+    <div class="cell climate" data-name="second" data-category="Klima">
+      <div class="icon-container">
+        <i class="fa-solid fa-snowflake"></i>
+      </div>
+      <h3>Klima</h3>
+      <p>Hava koşulları</p>
+      <div class="progress"></div>
+    </div>
+    
+    <div class="cell toilet" data-name="third" data-category="Tuvalet">
+      <div class="icon-container">
+        <i class="fa-solid fa-toilet"></i>
+      </div>
+      <h3>Tuvalet</h3>
+      <p>Tuvalet ihtiyacı</p>
+      <div class="progress"></div>
+    </div>
+    
+    <div class="cell sos" data-name="fifth" data-category="SOS">
+      <div class="icon-container">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3>SOS</h3>
+      <p>Acil yardım</p>
+      <div class="progress"></div>
+    </div>
+  </section>
+
+  <div class="controls">
+    <a href="/" class="nav-btn primary">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>EEG İzleme</span>
+    </a>
+  </div>
+</section>
+
+<script src="../static/js/app.js"></script>
+</body>
+</html>

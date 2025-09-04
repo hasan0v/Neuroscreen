@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NeuroScreen - EEG İzleme Sistemi</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <img src="/static/images/logo.png" alt="NeuroScreen Logo" class="logo-image">
+        <h1>NeuroScreen</h1>
+      </div>
+      <p class="subtitle">Beyninizin gücünü keşfedin - EEG İzleme</p>
+    </div>
+  </header>
+
+  <section class="screen2 dashboard">
+    <div class="dashboard-container">
+      <div class="eeg-section">
+        <div class="section-header">
+          <i class="fa-solid fa-wave-square"></i>
+          <h2>Beyin Dalgası Spektrumu</h2>
+          <div class="status-indicator">
+            <div class="status-dot active"></div>
+            <span>Canlı</span>
+          </div>
+        </div>
+        
+        <div class="eeg-container">
+          <img src="/eeg_stream" alt="EEG Grafiği" class="eeg-display">
+          <div class="eeg-overlay">
+            <div class="frequency-bands">
+              <div class="band alpha">
+                <span class="band-label">Alpha (8-13 Hz)</span>
+                <div class="band-indicator"></div>
+              </div>
+              <div class="band beta">
+                <span class="band-label">Beta (14-30 Hz)</span>
+                <div class="band-indicator"></div>
+              </div>
+              <div class="band gamma">
+                <span class="band-label">Gamma (31-40 Hz)</span>
+                <div class="band-indicator"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-panel">
+        <div class="info-card">
+          <i class="fa-solid fa-heartbeat"></i>
+          <h3>Sistem Durumu</h3>
+          <p>Aktif ve sağlıklı</p>
+        </div>
+        
+        <div class="info-card">
+          <i class="fa-solid fa-clock"></i>
+          <h3>Oturum Süresi</h3>
+          <p id="session-time">00:00:00</p>
+        </div>
+        
+        <div class="info-card">
+          <i class="fa-solid fa-signal"></i>
+          <h3>Sinyal Kalitesi</h3>
+          <p>Yüksek</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <a href="/focus" class="nav-btn primary">
+        <i class="fa-solid fa-spa"></i>
+        <span>Odaklanma Terapisi</span>
+      </a>
+      
+      <button class="nav-btn secondary" onclick="resetData()">
+        <i class="fa-solid fa-refresh"></i>
+        <span>Sistemi Sıfırla</span>
+      </button>
+    </div>
+  </section>
+
+  <script>
+    // Session timer
+    let startTime = Date.now();
+    function updateTimer() {
+      const elapsed = Date.now() - startTime;
+      const hours = Math.floor(elapsed / 3600000);
+      const minutes = Math.floor((elapsed % 3600000) / 60000);
+      const seconds = Math.floor((elapsed % 60000) / 1000);
+      
+      document.getElementById('session-time').textContent = 
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    setInterval(updateTimer, 1000);
+    
+    // Reset function
+    function resetData() {
+      fetch('/reset_data')
+        .then(response => response.json())
+        .then(data => {
+          alert('Sistem başarıyla sıfırlandı!');
+          startTime = Date.now();
+        })
+        .catch(error => console.error('Hata:', error));
+    }
+  </script>
+</body>
+</html>
