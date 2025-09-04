@@ -33,6 +33,10 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+print_info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
 print_step() {
     echo -e "${BLUE}[STEP]${NC} $1"
 }
@@ -128,70 +132,104 @@ print_status "Systemd service installed and enabled"
 
 print_step "10. Configuring Nginx..."
 # Backup default nginx config
-cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.backup
+cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.backup 2>/dev/null || true
 
 # Add rate limiting zones to nginx.conf if not already present
 if ! grep -q "neuroscreen_api" /etc/nginx/nginx.conf; then
     print_status "Adding rate limiting configuration to nginx.conf..."
-    # Add rate limiting zones to the http block
     sed -i '/http {/a\\n    # NeuroScreen Rate Limiting Zones\n    limit_req_zone $binary_remote_addr zone=neuroscreen_api:10m rate=10r/s;\n    limit_req_zone $binary_remote_addr zone=neuroscreen_static:10m rate=50r/s;\n    limit_req_zone $binary_remote_addr zone=neuroscreen_eeg:10m rate=5r/s;\n' /etc/nginx/nginx.conf
 fi
 
-# Install our nginx configuration (use fixed version if available)
-if [[ -f "$APP_DIR/nginx-neuroscreen-fixed.conf" ]]; then
-    print_status "Using fixed nginx configuration..."
-    cp $APP_DIR/nginx-neuroscreen-fixed.conf /etc/nginx/sites-available/neuroscreen
-else
-    cp $APP_DIR/nginx-neuroscreen.conf /etc/nginx/sites-available/neuroscreen
-fi
+# Create HTTP-only nginx configuration (before SSL certificate generation)
+print_status "Creating HTTP-only nginx configuration..."
+cat > /etc/nginx/sites-available/neuroscreen << EOF
+server {
+    listen 80;
+    server_name $DOMAIN www.$DOMAIN;
+    
+    root $APP_DIR;
+    index index.html;
 
+    access_log /var/log/nginx/neuroscreen.access.log;
+    error_log /var/log/nginx/neuroscreen.error.log;
+
+    # Let's Encrypt challenge location
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+        allow all;
+    }
+
+    # Main application
+    location / {
+        limit_req zone=neuroscreen_api burst=20 nodelay;
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_read_timeout 120;
+        proxy_connect_timeout 120;
+        proxy_send_timeout 120;
+    }
+
+    # EEG stream endpoint
+    location /eeg_stream {
+        limit_req zone=neuroscreen_eeg burst=5 nodelay;
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 300;
+        proxy_send_timeout 300;
+    }
+    
+    # Static files
+    location /static/ {
+        limit_req zone=neuroscreen_static burst=100 nodelay;
+        alias $APP_DIR/static/;
+        expires 1d;
+        add_header Cache-Control "public";
+    }
+
+    # Health check
+    location /health {
+        access_log off;
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host \$host;
+    }
+
+    # Block sensitive files
+    location ~ /\\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+    
+    location ~ /(data\\.txt|\\.env|config\\.py|wsgi\\.py)$ {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+}
+EOF
+
+# Enable the site and remove default
 ln -sf /etc/nginx/sites-available/neuroscreen /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 
 # Test nginx configuration
 print_status "Testing nginx configuration..."
-nginx -t
-if [ $? -ne 0 ]; then
+if nginx -t; then
+    print_status "Nginx configuration test passed"
+    systemctl reload nginx
+    print_status "Nginx reloaded successfully"
+else
     print_error "Nginx configuration test failed"
-    print_info "Attempting to fix common issues..."
-    
-    # Try using a simpler configuration
-    cat > /etc/nginx/sites-available/neuroscreen << 'EOF'
-server {
-    listen 80;
-    server_name neuroscreen.tetym.space www.neuroscreen.tetym.space;
-    return 301 https://$server_name$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name neuroscreen.tetym.space www.neuroscreen.tetym.space;
-
-    ssl_certificate /etc/letsencrypt/live/neuroscreen.tetym.space/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/neuroscreen.tetym.space/privkey.pem;
-    
-    location / {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-    
-    location /static/ {
-        alias /var/www/neuroscreen/static/;
-        expires 1d;
-    }
-}
-EOF
-    
     nginx -t
-    if [ $? -ne 0 ]; then
-        print_error "Even simplified nginx configuration failed"
-        exit 1
-    else
-        print_status "Using simplified nginx configuration"
-    fi
+    exit 1
 fi
 
 print_step "11. Setting up SSL certificate with Let's Encrypt..."
