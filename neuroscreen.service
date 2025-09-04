@@ -6,7 +6,7 @@ Wants=network-online.target
 Requires=network.target
 
 [Service]
-Type=notify
+Type=simple
 User=www-data
 Group=www-data
 WorkingDirectory=/var/www/neuroscreen
@@ -20,19 +20,15 @@ EnvironmentFile=-/var/www/neuroscreen/.env
 # Main service command
 ExecStart=/var/www/neuroscreen/venv/bin/gunicorn \
     --bind 127.0.0.1:5000 \
-    --workers 4 \
-    --worker-class gthread \
-    --threads 2 \
-    --max-requests 1000 \
-    --max-requests-jitter 100 \
+    --workers 2 \
+    --worker-class sync \
     --timeout 120 \
     --keepalive 5 \
-    --user www-data \
-    --group www-data \
     --access-logfile /var/log/neuroscreen/access.log \
     --error-logfile /var/log/neuroscreen/error.log \
     --log-level info \
     --capture-output \
+    --chdir /var/www/neuroscreen \
     wsgi:application
 
 # Restart policy
