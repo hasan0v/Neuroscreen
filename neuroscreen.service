@@ -1,0 +1,70 @@
+[Unit]
+Description=NeuroScreen BCI Application - Brain-Computer Interface System
+Documentation=https://github.com/your-repo/neuroscreen
+After=network.target network-online.target
+Wants=network-online.target
+Requires=network.target
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/neuroscreen
+Environment=PATH=/var/www/neuroscreen/venv/bin
+Environment=FLASK_ENV=production
+Environment=PYTHONPATH=/var/www/neuroscreen
+Environment=DOMAIN=neuroscreen.tetym.space
+Environment=PORT=5000
+EnvironmentFile=-/var/www/neuroscreen/.env
+
+# Main service command
+ExecStart=/var/www/neuroscreen/venv/bin/gunicorn \
+    --bind 127.0.0.1:5000 \
+    --workers 4 \
+    --worker-class gthread \
+    --threads 2 \
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
+    --timeout 120 \
+    --keepalive 5 \
+    --user www-data \
+    --group www-data \
+    --access-logfile /var/log/neuroscreen/access.log \
+    --error-logfile /var/log/neuroscreen/error.log \
+    --log-level info \
+    --capture-output \
+    wsgi:application
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=0
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/neuroscreen /var/log/neuroscreen /tmp
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+# Process limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Health check
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target
