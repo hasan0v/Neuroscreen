@@ -130,16 +130,68 @@ print_step "10. Configuring Nginx..."
 # Backup default nginx config
 cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.backup
 
-# Install our nginx configuration
-cp $APP_DIR/nginx-neuroscreen.conf /etc/nginx/sites-available/neuroscreen
+# Add rate limiting zones to nginx.conf if not already present
+if ! grep -q "neuroscreen_api" /etc/nginx/nginx.conf; then
+    print_status "Adding rate limiting configuration to nginx.conf..."
+    # Add rate limiting zones to the http block
+    sed -i '/http {/a\\n    # NeuroScreen Rate Limiting Zones\n    limit_req_zone $binary_remote_addr zone=neuroscreen_api:10m rate=10r/s;\n    limit_req_zone $binary_remote_addr zone=neuroscreen_static:10m rate=50r/s;\n    limit_req_zone $binary_remote_addr zone=neuroscreen_eeg:10m rate=5r/s;\n' /etc/nginx/nginx.conf
+fi
+
+# Install our nginx configuration (use fixed version if available)
+if [[ -f "$APP_DIR/nginx-neuroscreen-fixed.conf" ]]; then
+    print_status "Using fixed nginx configuration..."
+    cp $APP_DIR/nginx-neuroscreen-fixed.conf /etc/nginx/sites-available/neuroscreen
+else
+    cp $APP_DIR/nginx-neuroscreen.conf /etc/nginx/sites-available/neuroscreen
+fi
+
 ln -sf /etc/nginx/sites-available/neuroscreen /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 
 # Test nginx configuration
+print_status "Testing nginx configuration..."
 nginx -t
 if [ $? -ne 0 ]; then
     print_error "Nginx configuration test failed"
-    exit 1
+    print_info "Attempting to fix common issues..."
+    
+    # Try using a simpler configuration
+    cat > /etc/nginx/sites-available/neuroscreen << 'EOF'
+server {
+    listen 80;
+    server_name neuroscreen.tetym.space www.neuroscreen.tetym.space;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name neuroscreen.tetym.space www.neuroscreen.tetym.space;
+
+    ssl_certificate /etc/letsencrypt/live/neuroscreen.tetym.space/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/neuroscreen.tetym.space/privkey.pem;
+    
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    
+    location /static/ {
+        alias /var/www/neuroscreen/static/;
+        expires 1d;
+    }
+}
+EOF
+    
+    nginx -t
+    if [ $? -ne 0 ]; then
+        print_error "Even simplified nginx configuration failed"
+        exit 1
+    else
+        print_status "Using simplified nginx configuration"
+    fi
 fi
 
 print_step "11. Setting up SSL certificate with Let's Encrypt..."
