@@ -23,11 +23,9 @@ ExecStart=/var/www/neuroscreen/venv/bin/gunicorn \
     --workers 2 \
     --worker-class sync \
     --timeout 120 \
-    --keepalive 5 \
     --access-logfile /var/log/neuroscreen/access.log \
     --error-logfile /var/log/neuroscreen/error.log \
     --log-level info \
-    --capture-output \
     --chdir /var/www/neuroscreen \
     wsgi:application
 
