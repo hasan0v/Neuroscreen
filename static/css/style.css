@@ -147,13 +147,13 @@ body::after {
 
 /* Health Interface Grid - 2x2 Layout */
 .health-interface.grid-2x2 {
-  padding: 2rem;
+  padding: 1rem;
   min-height: calc(100vh - 80px);
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: 2rem;
-  max-width: 1400px;
+  gap: 1.5rem;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -161,7 +161,7 @@ body::after {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: var(--border-radius-lg);
-  padding: 3rem 4rem;
+  padding: 2rem 3rem;
   text-align: center;
   position: relative;
   transition: var(--transition);
@@ -169,7 +169,7 @@ body::after {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   overflow: hidden;
-  min-height: 300px;
+  min-height: 250px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -238,7 +238,30 @@ body::after {
   color: var(--text-secondary);
   margin-bottom: 1rem;
 }
-
+.hydration{
+  margin-top: 5px;
+  margin-left: -165px;
+  margin-right: 100px;
+  margin-bottom: 100px;
+}
+.climate{
+  margin-top: 5px;
+  margin-left: 100px;
+  margin-right: -165px;
+  margin-bottom: 100px;
+}
+.toilet{
+  margin-top: 0px;
+  margin-left: -165px;
+  margin-right: 100px;
+  margin-bottom: 100px;
+}
+.sos{
+  margin-top: 0px;
+  margin-left: 100px;
+  margin-right: -165px;
+  margin-bottom: 100px;
+}
 /* Health Category Specific Styles */
 .hydration .icon-container {
   background: linear-gradient(135deg, #dbeafe, #bfdbfe);
