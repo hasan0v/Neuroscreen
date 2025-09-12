@@ -111,23 +111,26 @@ body::after {
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  align-items: center !important;
   gap: 1rem;
-  justify-content: space-between; /* Ensures stable positioning */
+  justify-content: space-between !important; /* Ensures stable positioning */
+  position: relative !important;
 }
 
 .header-left {
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  align-items: center !important;
   gap: 1rem;
+  flex-shrink: 0 !important;
 }
 
 .header-right {
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  align-items: center !important;
   gap: 1rem;
-  margin-left: auto;
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
 }
 
 .logo {
@@ -591,22 +594,26 @@ body::after {
 
 /* Standardized header button styles - replaces nav-btn */
 .header-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 25px;
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.85rem;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-  cursor: pointer;
-  white-space: nowrap; /* Prevent text wrapping */
-  flex-shrink: 0; /* Prevent button shrinking */
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 0.5rem 1rem !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 25px !important;
+  color: white !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  white-space: nowrap !important; /* Prevent text wrapping */
+  flex-shrink: 0 !important; /* Prevent button shrinking */
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 10 !important;
 }
 
 .header-btn:hover {
