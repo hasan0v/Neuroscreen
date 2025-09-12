@@ -869,3 +869,222 @@ body::after {
   min-width: 180px;
   justify-content: center;
 }
+
+/* PWA Styles */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  padding: 1rem;
+  z-index: 1000;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.pwa-install-banner.visible {
+  transform: translateY(0);
+}
+
+.pwa-install-banner.hidden {
+  transform: translateY(100%);
+}
+
+.install-content {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.install-icon i {
+  font-size: 2rem;
+  color: white;
+}
+
+.install-text {
+  flex: 1;
+}
+
+.install-text h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.install-text p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.install-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.install-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.install-btn.primary {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--primary-color);
+}
+
+.install-btn.primary:hover {
+  background: white;
+  transform: translateY(-2px);
+}
+
+.install-btn.secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.install-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.pwa-update-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--warning-color);
+  color: white;
+  padding: 0.75rem;
+  z-index: 1001;
+  text-align: center;
+  transform: translateY(-100%);
+  animation: slideDownUpdate 0.3s ease forwards;
+}
+
+@keyframes slideDownUpdate {
+  to {
+    transform: translateY(0);
+  }
+}
+
+.update-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.update-btn {
+  background: white;
+  color: var(--warning-color);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.update-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.pwa-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  color: white;
+  z-index: 1002;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  max-width: 300px;
+}
+
+.pwa-notification.show {
+  transform: translateX(0);
+}
+
+.pwa-notification.success {
+  background: var(--success-color);
+}
+
+.pwa-notification.info {
+  background: var(--primary-color);
+}
+
+.pwa-notification.warning {
+  background: var(--warning-color);
+}
+
+.pwa-notification button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.pwa-notification button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Mobile-first PWA optimizations */
+@media (max-width: 768px) {
+  .install-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .install-actions {
+    justify-content: center;
+  }
+  
+  .pwa-notification {
+    left: 10px;
+    right: 10px;
+    max-width: none;
+  }
+}
+
+/* PWA display mode detection */
+@media (display-mode: standalone) {
+  /* Styles for when app is installed and running as PWA */
+  .header {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* iOS Safari specific PWA styles */
+@supports (-webkit-touch-callout: none) {
+  .header {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "name": "NeuroScreen - EEG İzleme Sistemi",
+  "short_name": "NeuroScreen",
+  "description": "Beyninizin gücünü keşfedin - EEG İzleme ve Odaklanma Terapisi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "tr",
+  "categories": ["health", "medical", "productivity"],
+  "icons": [
+    {
+      "src": "/static/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/static/screenshots/desktop-screenshot.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "EEG İzleme Dashboard"
+    },
+    {
+      "src": "/static/screenshots/mobile-screenshot.png",
+      "sizes": "375x667",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobil Odaklanma Terapisi"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "EEG İzleme",
+      "short_name": "EEG",
+      "description": "Beyin dalgası spektrumu izleme",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/static/icons/eeg-shortcut.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Odaklanma Terapisi",
+      "short_name": "Odaklanma",
+      "description": "Sağlık odaklanma egzersizleri",
+      "url": "/focus",
+      "icons": [
+        {
+          "src": "/static/icons/focus-shortcut.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
