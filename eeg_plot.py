@@ -136,64 +136,66 @@ def generate_fft_frames():
         
         power_spectrum_smooth = smooth_spectrum(power_spectrum)
 
-        # Create the plot
-        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 8))
+        # Create the plot with bigger and wider dimensions
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(18, 12))  # Increased from (14, 8) to (18, 12)
         
-        # Plot 1: Time domain signal (last 2 seconds)
+        # Plot 1: Time domain signal (last 2 seconds) - Enhanced size and visibility
         time_window = t[-int(2*fs):]  # Last 2 seconds
         eeg_window = eeg[-int(2*fs):]
-        ax1.plot(time_window, eeg_window, color='#2563eb', linewidth=1.5, alpha=0.8)
-        ax1.set_title('EEG Zaman Siqnalı (Son 2 saniyə)', fontsize=14, fontweight='bold')
-        ax1.set_xlabel('Vaxt (saniyə)')
-        ax1.set_ylabel('Amplitud (μV)')
+        ax1.plot(time_window, eeg_window, color='#2563eb', linewidth=2.5, alpha=0.9)  # Increased line width
+        ax1.set_title('EEG Zaman Siqnalı (Son 2 saniyə)', fontsize=18, fontweight='bold')  # Larger title
+        ax1.set_xlabel('Vaxt (saniyə)', fontsize=14)  # Larger labels
+        ax1.set_ylabel('Amplitud (μV)', fontsize=14)
         ax1.set_ylim(-100, 100)
-        ax1.grid(True, alpha=0.3)
+        ax1.grid(True, alpha=0.3, linewidth=1.2)  # Slightly thicker grid
         ax1.set_facecolor('#f8fafc')
+        ax1.tick_params(labelsize=12)  # Larger tick labels
         
-        # Add annotations for active states
+        # Add annotations for active states - Enhanced visibility
         active_states = [key for key, val in data.items() if val == 1]
         if active_states and current_time >= wait_until:
             state_name = mapping[active_states[0]]["name"]
             ax1.text(0.02, 0.95, f'Aktiv Hal: {state_name}', transform=ax1.transAxes, 
-                    bbox=dict(boxstyle="round,pad=0.3", facecolor='lightgreen', alpha=0.7),
-                    fontsize=10, fontweight='bold')
+                    bbox=dict(boxstyle="round,pad=0.5", facecolor='lightgreen', alpha=0.8),
+                    fontsize=14, fontweight='bold')  # Larger annotation text
 
-        # Plot 2: Frequency spectrum
+        # Plot 2: Frequency spectrum - Enhanced size and visibility
         ax2.plot(fft_freqs[freq_mask], power_spectrum_smooth[freq_mask], 
-                color='#10b981', linewidth=2, alpha=0.9)
+                color='#10b981', linewidth=3, alpha=0.9)  # Increased line width
         ax2.fill_between(fft_freqs[freq_mask], power_spectrum_smooth[freq_mask], 
-                        alpha=0.3, color='#10b981')
+                        alpha=0.4, color='#10b981')  # Slightly more opaque fill
         
-        # Highlight active frequency bands
+        # Highlight active frequency bands with enhanced visibility
         for key, button_info in mapping.items():
             if data.get(key, 0) == 1 and current_time >= wait_until:
                 freq = button_info["freq"]
                 freq_range = (fft_freqs >= freq-2) & (fft_freqs <= freq+2)
                 ax2.fill_between(fft_freqs[freq_range], power_spectrum_smooth[freq_range], 
-                               alpha=0.6, color='red', label=f'{button_info["name"]}')
+                               alpha=0.7, color='red', label=f'{button_info["name"]}', linewidth=2)
         
-        ax2.set_title('EEG Güc Spektrumu', fontsize=14, fontweight='bold')
-        ax2.set_xlabel('Tezlik (Hz)')
-        ax2.set_ylabel('Güc (μV²/Hz)')
+        ax2.set_title('EEG Güc Spektrumu', fontsize=18, fontweight='bold')  # Larger title
+        ax2.set_xlabel('Tezlik (Hz)', fontsize=14)  # Larger labels
+        ax2.set_ylabel('Güc (μV²/Hz)', fontsize=14)
         ax2.set_xlim(1, 50)
         ax2.set_ylim(0, np.max(power_spectrum_smooth[freq_mask]) * 1.1)
-        ax2.grid(True, alpha=0.3)
+        ax2.grid(True, alpha=0.3, linewidth=1.2)  # Slightly thicker grid
         ax2.set_facecolor('#f8fafc')
+        ax2.tick_params(labelsize=12)  # Larger tick labels
         
-        # Add frequency band labels
+        # Add frequency band labels with enhanced visibility
         band_labels = [
             (2, "δ"), (6, "θ"), (10, "α"), (20, "β"), (35, "γ")
         ]
         for freq, label in band_labels:
-            ax2.axvline(x=freq, color='gray', linestyle='--', alpha=0.5)
+            ax2.axvline(x=freq, color='gray', linestyle='--', alpha=0.6, linewidth=1.5)  # Thicker lines
             ax2.text(freq, ax2.get_ylim()[1]*0.9, label, ha='center', 
-                    fontsize=12, fontweight='bold', color='gray')
+                    fontsize=16, fontweight='bold', color='gray')  # Larger labels
 
-        plt.tight_layout()
+        plt.tight_layout(pad=2.0)  # More padding between plots
         
-        # Save plot
+        # Save plot with higher DPI for better quality
         img_bytes = io.BytesIO()
-        fig.savefig(img_bytes, format='png', dpi=100, bbox_inches='tight', 
+        fig.savefig(img_bytes, format='png', dpi=120, bbox_inches='tight',  # Increased DPI from 100 to 120
                    facecolor='white', edgecolor='none')
         plt.close(fig)
         img_bytes.seek(0)
