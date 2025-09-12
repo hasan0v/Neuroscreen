@@ -20,6 +20,9 @@ class NeuroScreenPWA {
     
     // Handle network status
     this.handleNetworkStatus();
+    
+    // Ensure standalone mode
+    this.enforceStandaloneMode();
   }
 
   async registerServiceWorker() {
@@ -203,6 +206,68 @@ class NeuroScreenPWA {
   isAppInstalled() {
     return window.matchMedia('(display-mode: standalone)').matches ||
            window.navigator.standalone === true;
+  }
+
+  // Enforce standalone mode - hide browser UI
+  enforceStandaloneMode() {
+    // Hide address bar on mobile browsers
+    if (!this.isAppInstalled()) {
+      // Try to hide address bar by scrolling
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          window.scrollTo(0, 1);
+        }, 100);
+      });
+      
+      // Hide on orientation change
+      window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+          window.scrollTo(0, 1);
+        }, 500);
+      });
+    }
+    
+    // Prevent zoom on double tap
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (event) => {
+      const now = (new Date()).getTime();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+    
+    // Disable pull-to-refresh
+    document.body.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        // Disable pull-to-refresh if at top of page
+        if (document.body.scrollTop === 0 || document.documentElement.scrollTop === 0) {
+          e.preventDefault();
+        }
+      }
+    }, { passive: false });
+    
+    document.body.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1) {
+        // Prevent overscroll bounce
+        const touch = e.touches[0];
+        if (document.body.scrollTop === 0 && touch.pageY > touch.target.offsetTop) {
+          e.preventDefault();
+        }
+      }
+    }, { passive: false });
+    
+    // Add body class for standalone mode
+    if (this.isAppInstalled()) {
+      document.body.classList.add('pwa-standalone');
+    }
+    
+    // Detect and handle fullscreen mode
+    if (window.matchMedia('(display-mode: fullscreen)').matches) {
+      document.body.classList.add('pwa-fullscreen');
+    }
+    
+    console.log('NeuroScreen PWA: Standalone mode enforced');
   }
 }
 
