@@ -828,7 +828,7 @@ body::after {
 /* Dashboard Styles */
 .dashboard {
   padding: 2rem;
-  padding-top: 5rem; /* Add extra top padding for fixed header */
+  padding-top: 8rem; /* Add extra top padding for fixed header */
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -945,6 +945,7 @@ body::after {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  display: none; /* Hidden for cleaner look */
 }
 
 .band {
