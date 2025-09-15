@@ -137,7 +137,7 @@ Nginx yapılandırması dahil edilmiştir:
 - Gzip sıkıştırma
 - Rate limiting
 - SSL/TLS desteği (yapılandırma gerekli)
-- Güvenlik başlıkları
+-  
 
 ## 📊 Sistem Bileşenleri
 

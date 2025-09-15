@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Header Test</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { margin: 0; padding: 20px; background: #f0f2f5; }
+        .test-container { max-width: 1200px; margin: 0 auto; }
+        .test-header { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h2>Header Layout Test</h2>
+            <p>Testing the notification button positioning in the header</p>
+        </div>
+        
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">
+                        <h1>NeuroScreen</h1>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <p class="subtitle">Beyninizin gücünü keşfedin - EEG İzleme</p>
+                    <button class="notification-btn" style="display:flex;" aria-label="Bildirimleri aç">
+                        <i class="fa-solid fa-bell"></i>
+                        <span>Bildirimler</span>
+                        <div class="notification-badge" style="display:flex;">3</div>
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <div style="padding: 20px; background: white; border-radius: 8px; margin-top: 20px;">
+            <h3>Layout Notes:</h3>
+            <ul>
+                <li>✓ Notification button should be small and positioned to the right of the subtitle</li>
+                <li>✓ Header should maintain flex layout with space-between</li>
+                <li>✓ On mobile, layout should stack vertically</li>
+                <li>✓ Button should maintain functionality while being visually compact</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

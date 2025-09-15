@@ -1,3 +1,412 @@
+/* Enhanced Modern Notification System */
+.notification-pane.slide-out {
+  animation: slideOut 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.close-notification {
+  background: linear-gradient(135deg, #ef4444, #f59e0b);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(239,68,68,0.25), 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-left: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.close-notification::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.close-notification:hover {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 6px 20px rgba(239,68,68,0.35), 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.close-notification:hover::before {
+  transform: translateX(100%);
+}
+
+.close-notification:active {
+  transform: scale(0.95);
+}
+
+/* Modern notification pane with glassmorphism and proper scrolling */
+.notification-pane {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  max-width: 90vw;
+  height: 100vh;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(25px);
+  border-left: 1px solid rgba(255,255,255,0.3);
+  border-radius: 0 0 0 20px;
+  z-index: 9999;
+  display: none;
+  flex-direction: column;
+  animation: slideInNotification 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+  box-shadow: 
+    -8px 0 32px rgba(37,99,235,0.15),
+    -2px 0 8px rgba(0,0,0,0.1),
+    inset 1px 0 0 rgba(255,255,255,0.3);
+}
+
+.notification-pane::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, 
+    var(--primary-color) 0%, 
+    var(--secondary-color) 50%, 
+    var(--accent-color) 100%);
+  z-index: 2;
+}
+
+@keyframes slideInNotification {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, 
+    rgba(37, 99, 235, 0.95) 0%,
+    rgba(6, 182, 212, 0.90) 50%,
+    rgba(16, 185, 129, 0.85) 100%);
+  backdrop-filter: blur(20px);
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.notification-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(255,255,255,0.1) 50%, 
+    transparent 70%);
+  pointer-events: none;
+}
+
+.notification-header h3 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.notification-header h3 i {
+  font-size: 1.3rem;
+  opacity: 0.9;
+}
+
+.notification-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, 
+    rgba(248,250,252,0.9) 0%, 
+    rgba(255,255,255,0.95) 100%);
+  position: relative;
+  /* Ensure proper scrolling behavior */
+  min-height: 0;
+  max-height: calc(100vh - 200px); /* Prevent content from exceeding viewport */
+  /* Add padding bottom to prevent content from hiding behind clear all button */
+  padding-bottom: 100px;
+}
+
+.notification-content::before {
+  content: '';
+  position: absolute; /* Changed from fixed to absolute */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+  pointer-events: none; /* Ensure it doesn't block interactions */
+  z-index: -1;
+}
+
+/* Modern notification items */
+.notification-item {
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(37,99,235,0.1);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  animation: notificationItemFadeIn 0.5s ease-out;
+  /* Add hover effects for better interactivity */
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Enhanced remove button for each notification */
+.notification-item .notification-remove {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+  transform: scale(1);
+  z-index: 2;
+  backdrop-filter: blur(10px);
+}
+
+.notification-item:hover .notification-remove {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.notification-remove:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+  transform: scale(1.1);
+  box-shadow: 
+    0 4px 12px rgba(239, 68, 68, 0.2),
+    0 2px 4px rgba(0,0,0,0.1);
+}
+
+.notification-remove:active {
+  transform: scale(0.95);
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.notification-remove i {
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+
+.notification-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, 
+    var(--primary-color), 
+    var(--secondary-color));
+  border-radius: 0 2px 2px 0;
+}
+
+.notification-item:hover {
+  transform: translateX(-4px) scale(1.02);
+  background: rgba(255,255,255,0.95);
+  border-color: rgba(37,99,235,0.2);
+  box-shadow: 
+    0 8px 25px rgba(37,99,235,0.15),
+    0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Add padding to notification text to prevent overlap with remove button */
+.notification-item .notification-text {
+  flex: 1;
+  line-height: 1.5;
+  padding-right: 2rem;
+}
+
+.notification-item:last-child {
+  margin-bottom: 0;
+}
+
+@keyframes notificationItemFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notification-item i {
+  font-size: 1.1rem;
+  color: var(--primary-color);
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+}
+
+.notification-item .notification-time {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+  opacity: 0.7;
+}
+
+/* Enhanced notification removal animations */
+.notification-item.removing {
+  animation: notificationRemove 0.4s ease-out forwards;
+}
+
+@keyframes notificationRemove {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  50% {
+    transform: translateX(-10px) scale(0.98);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+    height: 0;
+    margin-bottom: 0;
+    padding: 0;
+  }
+}
+
+/* Empty state for notifications */
+.notification-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-secondary);
+  min-height: 200px;
+}
+
+.notification-empty i {
+  font-size: 3rem;
+  color: var(--border-color);
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.notification-empty h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.notification-empty p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Fixed clear all notifications button at bottom */
+.notification-clear-all {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 1.5rem;
+  margin: 0;
+  background: linear-gradient(135deg, 
+    rgba(100, 116, 139, 0.95) 0%, 
+    rgba(71, 85, 105, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  box-shadow: 
+    0 -4px 20px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  z-index: 11;
+}
+
+.notification-clear-all:hover {
+  background: linear-gradient(135deg, 
+    rgba(71, 85, 105, 0.95) 0%, 
+    rgba(51, 65, 85, 0.95) 100%);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 -6px 24px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.notification-clear-all:active {
+  transform: translateY(0);
+}
+
+.notification-clear-all i {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+/* Enhanced notification button */
+.notification-btn {\n  display: none !important;\n  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));\n  color: white;\n  border: none;\n  border-radius: 50%;\n  width: 45px;\n  height: 45px;\n  align-items: center;\n  justify-content: center;\n  font-size: 1.2rem;\n  box-shadow: \n    0 4px 12px rgba(37,99,235,0.25),\n    0 2px 4px rgba(0,0,0,0.1);\n  cursor: pointer;\n  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);\n  margin-bottom: 1rem;\n  position: relative;\n  overflow: hidden;\n}\n\n.notification-btn::before {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);\n  transform: scale(0);\n  transition: transform 0.3s ease;\n  border-radius: 50%;\n}\n\n.notification-btn:hover {\n  transform: scale(1.1);\n  box-shadow: \n    0 6px 20px rgba(37,99,235,0.35),\n    0 4px 8px rgba(0,0,0,0.15);\n}\n\n.notification-btn:hover::before {\n  transform: scale(1);\n}\n\n.notification-btn:active {\n  transform: scale(0.95);\n}\n\n/* Notification badge for unread count */\n.notification-btn .notification-badge {\n  position: absolute;\n  top: -2px;\n  right: -2px;\n  background: linear-gradient(135deg, #ef4444, #dc2626);\n  color: white;\n  border-radius: 50%;\n  width: 18px;\n  height: 18px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 0.7rem;\n  font-weight: 700;\n  border: 2px solid white;\n  box-shadow: 0 2px 4px rgba(0,0,0,0.2);\n}\n\n@media (max-width: 768px) {\n  .notification-btn {\n    display: flex !important;\n    width: 100%;\n    border-radius: 25px;\n    font-size: 1rem;\n    justify-content: flex-start;\n    padding: 0.75rem 1.25rem;\n    height: auto;\n    gap: 0.75rem;\n  }\n  \n  .notification-btn .notification-badge {\n    position: static;\n    margin-left: auto;\n  }\n}
 /* Modern Healthcare Design System */
 :root {
   --primary-color: #2563eb;
@@ -93,9 +502,12 @@ body::after {
   backdrop-filter: blur(25px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   padding: 1rem 1.5rem;
-  position: sticky;
+  position: fixed; /* Changed from sticky to fixed for more reliable positioning */
   top: 0;
-  z-index: 100;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000; /* Increased z-index to ensure it stays on top */
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
@@ -129,8 +541,61 @@ body::after {
   display: flex !important;
   align-items: center !important;
   gap: 1rem;
-  margin-left: auto !important;
+  margin-left: auto;
   flex-shrink: 0 !important;
+}
+
+/* Small header notification button */
+.header .notification-btn {
+  display: flex !important;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  min-width: auto;
+  height: auto;
+  animation: none;
+  width: auto !important;
+}
+
+.header .notification-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.header .notification-btn i {
+  font-size: 0.9rem;
+}
+
+.header .notification-btn .notification-badge {
+  position: static;
+  background: #ef4444;
+  color: white;
+  border-radius: 10px;
+  width: auto;
+  height: auto;
+  min-width: 18px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-left: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo {
@@ -214,6 +679,7 @@ body::after {
 /* Health Interface Grid - 2x2 Layout */
 .health-interface.grid-2x2 {
   padding: 2rem;
+  padding-top: 6rem; /* Add extra top padding for fixed header */
   min-height: calc(100vh - 80px);
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -263,7 +729,7 @@ body::after {
 .icon-container {
   width: 100px; /* Reduced from 150px */
   height: 100px; /* Reduced from 150px */
-  margin: 0 auto 1.5rem; /* Reduced from 2rem */
+  margin: 0 auto 1.5rem; /* Reduced margin from 2rem */
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -293,16 +759,16 @@ body::after {
 }
 
 .cell h3 {
-  font-size: 2rem;
+  font-size: 1.5rem; /* Reduced from 2rem */
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem; /* Reduced from 1rem */
   color: var(--text-primary);
 }
 
 .cell p {
-  font-size: 1.25rem;
+  font-size: 1rem; /* Reduced from 1.25rem */
   color: var(--text-secondary);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem; /* Reduced from 1rem */
 }
 
 /* Health Category Specific Styles */
@@ -312,7 +778,7 @@ body::after {
 
 .hydration i {
   color: var(--primary-color);
-  font-size: 3.5rem; /* Reduced from 5rem */
+  font-size: 3.5rem;
 }
 
 .climate .icon-container {
@@ -321,7 +787,7 @@ body::after {
 
 .climate i {
   color: var(--secondary-color);
-  font-size: 3.5rem; /* Reduced from 5rem */
+  font-size: 3.5rem;
 }
 
 .toilet .icon-container {
@@ -330,7 +796,7 @@ body::after {
 
 .toilet i {
   color: var(--warning-color);
-  font-size: 3.5rem; /* Reduced from 5rem */
+  font-size: 3.5rem;
 }
 
 .sos .icon-container {
@@ -339,7 +805,7 @@ body::after {
 
 .sos i {
   color: var(--danger-color);
-  font-size: 3.5rem; /* Reduced from 5rem */
+  font-size: 3.5rem;
 }
 
 /* Progress Bar */
@@ -362,6 +828,7 @@ body::after {
 /* Dashboard Styles */
 .dashboard {
   padding: 2rem;
+  padding-top: 5rem; /* Add extra top padding for fixed header */
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -377,7 +844,7 @@ body::after {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: var(--border-radius-lg);
-  padding: 2rem;
+  padding: 32px; /* Increased padding for better spacing */
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
@@ -426,21 +893,42 @@ body::after {
 }
 
 .eeg-container {
+  display: flex;
+  flex-direction: column;
   position: relative;
   border-radius: var(--border-radius);
   overflow: hidden;
   background: #f8fafc;
   min-height: 650px; /* Increased from 600px to utilize more space */
-  width: 100%;
-  max-width: 100%; /* Ensure full width utilization */
+}
+
+.eeg-displays {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
 }
 
 .eeg-display {
   width: 100%;
-  height: auto;
+  height: 300px; /* Fixed height to prevent size changes */
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eeg-display img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures consistent sizing */
+  object-position: center;
   display: block;
-  max-width: 100%; /* Ensure the image fills the container */
-  object-fit: contain; /* Maintain aspect ratio while fitting */
+  transition: opacity 0.3s ease;
 }
 
 .eeg-overlay {
@@ -689,8 +1177,11 @@ body::after {
   .header-right {
     flex-direction: column;
     gap: 0.5rem;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0px!important;
   }
-  
+
   .subtitle {
     margin: 0;
     text-align: center;
@@ -705,12 +1196,13 @@ body::after {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, 1fr);
     padding: 1rem;
+    padding-top: 4rem; /* Add top padding for fixed header on mobile */
     gap: 1.5rem;
   }
   
   .cell {
-    min-height: 250px;
-    padding: 2rem;
+    min-height: 180px; /* Reduced from 250px */
+    padding: 1.5rem; /* Reduced from 2rem */
   }
   
   .icon-container {
@@ -719,15 +1211,15 @@ body::after {
   }
   
   .hydration i, .climate i, .toilet i, .sos i {
-    font-size: 2.8rem; /* Reduced from 4rem */
+    font-size: 2.5rem; /* Reduced from 4rem */
   }
   
   .cell h3 {
-    font-size: 1.75rem;
+    font-size: 1.25rem; /* Reduced from 1.75rem */
   }
   
   .cell p {
-    font-size: 1.125rem;
+    font-size: 0.875rem; /* Reduced from 1.125rem */
   }
   
   .dashboard-container {
@@ -768,19 +1260,71 @@ body::after {
   }
 }
 
+
+@media (max-width: 650px) {
+  .section-header{
+    gap: 0.5rem;
+    flex-direction: column;
+  }
+  .status-indicator{
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+  .eeg-section{
+    padding: 20px;
+  }
+  .eeg-displays {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .eeg-display {
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    height: 250px; /* Fixed height to prevent size changes */
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #f8fafc;
+  }
+
+  .eeg-display img {
+    min-width: 300px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+  .eeg-container {
+    min-height: 0px; /* Increased from 600px to utilize more space */
+  }
+  
+
+}
+
 @media (max-width: 480px) {
   .cell {
     padding: 1.5rem;
     min-height: 220px;
   }
-  
-  .icon-container {
-    width: 70px; /* Reduced for mobile */
-    height: 70px; /* Reduced for mobile */
+  .section-header h2{
+    font-size: 1.1rem;
   }
-  
+
+.icon-container {
+  width: 100px;
+  height: 100px;
+  }
+
   .hydration i, .climate i, .toilet i, .sos i {
-    font-size: 2.5rem; /* Reduced from 3.5rem */
+    font-size: 3.5rem;
   }
   
   .cell h3 {
@@ -802,6 +1346,56 @@ body::after {
   .logo-image {
     width: 35px;
     height: 35px;
+  }
+  .screen2{
+    padding: 1rem 0!important;
+  }
+  .eeg-displays{
+   
+
+  }
+  .eeg-display {
+    height: 200px; /* Fixed height to prevent size changes */
+    width: 100%;
+    max-width: 350px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f8fafc;
+    margin: 0 auto;
+  }
+
+  .eeg-display img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    
+  }
+  .action-buttons {
+    justify-content: center;
+    margin: 0 auto;
+    width: 90%;
+    gap: 0.2rem;
+    flex-direction: column;
+  }
+  .action-buttons .action-btn{
+    padding: 1rem;
+    font-size: 16px!important;
+    font-weight: 600!important;
+  }
+  .action-buttons .action-btn span{
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .subtitle {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+  }
+  .eeg-section{
+    padding: 10px;
   }
 }
 
@@ -1058,7 +1652,13 @@ body::after {
     text-align: center;
     gap: 0.75rem;
   }
-  
+  .eeg-overlay {
+  position: relative;
+  top: auto;
+  right: auto;
+  margin-bottom: 0.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  }
   .install-actions {
     justify-content: center;
   }
@@ -1205,4 +1805,495 @@ body.pwa-fullscreen textarea {
   -moz-user-select: text;
   -ms-user-select: text;
   user-select: text;
+}
+
+/* Small header notification button */
+.header .notification-btn {
+  display: flex !important;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  min-width: auto;
+  height: auto;
+  animation: none;
+}
+
+.header .notification-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.header .notification-btn i {
+  font-size: 0.9rem;
+}
+
+.header .notification-btn .notification-badge {
+  position: static;
+  background: #ef4444;
+  color: white;
+  border-radius: 10px;
+  width: auto;
+  height: auto;
+  min-width: 18px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-left: 0.25rem;
+}
+
+/* Notification button pulse animation */
+@keyframes notificationPulse {
+  0%, 100% {
+    box-shadow: 
+      0 6px 20px rgba(37,99,235,0.3),
+      0 2px 8px rgba(0,0,0,0.15),
+      inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+  50% {
+    box-shadow: 
+      0 8px 25px rgba(37,99,235,0.4),
+      0 4px 12px rgba(0,0,0,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+}
+
+/* Badge bounce animation */
+@keyframes badgeBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Modern confirmation dialog for notification removal */
+.notification-confirm-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  animation: fadeInDialog 0.3s ease-out;
+}
+
+.notification-confirm-content {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: slideInDialog 0.3s ease-out;
+}
+
+.notification-confirm-content h3 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.notification-confirm-content p {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.notification-confirm-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.notification-confirm-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.notification-confirm-btn.cancel {
+  background: rgba(100, 116, 139, 0.1);
+  color: var(--text-secondary);
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+.notification-confirm-btn.cancel:hover {
+  background: rgba(100, 116, 139, 0.15);
+  color: var(--text-primary);
+}
+
+.notification-confirm-btn.confirm {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.notification-confirm-btn.confirm:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Universal Modal System */
+.modern-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10002;
+  animation: fadeInModal 0.3s ease-out;
+}
+
+.modern-modal-content {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(25px);
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: slideInModal 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.modern-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.modern-modal-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.modern-modal-icon.success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.modern-modal-icon.error {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.modern-modal-icon.warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.modern-modal-icon.info {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+.modern-modal-title {
+  flex: 1;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.modern-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-secondary);
+}
+
+.modern-modal-close:hover {
+  background: rgba(0, 0, 0, 0.15);
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+.modern-modal-body {
+  margin-bottom: 2rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.modern-modal-footer {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.modern-modal-btn {
+  padding: 0.875rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.modern-modal-btn.primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.modern-modal-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+}
+
+.modern-modal-btn.secondary {
+  background: rgba(100, 116, 139, 0.1);
+  color: var(--text-secondary);
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+.modern-modal-btn.secondary:hover {
+  background: rgba(100, 116, 139, 0.15);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.modern-modal-btn.danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.modern-modal-btn.danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+}
+
+.modern-modal-btn.success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.modern-modal-btn.success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+/* Modal Animations */
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInModal {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Mobile optimizations for modals */
+@media (max-width: 768px) {
+  .modern-modal-content {
+    margin: 1rem;
+    padding: 2rem;
+    max-height: 90vh;
+  }
+  
+  .modern-modal-footer {
+    flex-direction: column;
+  }
+  
+  .modern-modal-btn {
+    width: 100%;
+  }
+}
+
+/* Modal size variations */
+.modern-modal-content.modal-small {
+  max-width: 350px;
+  padding: 1.5rem;
+}
+
+.modern-modal-content.modal-medium {
+  max-width: 500px;
+  padding: 2.5rem;
+}
+
+.modern-modal-content.modal-large {
+  max-width: 700px;
+  padding: 3rem;
+}
+
+/* Enhanced notification remove button always visible */
+.notification-item .notification-remove {
+  opacity: 0.7 !important;
+  transform: scale(1) !important;
+}
+
+.notification-item:hover .notification-remove {
+  opacity: 1 !important;
+  transform: scale(1.05) !important;
+}
+
+@keyframes fadeInDialog {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInDialog {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@media (max-width: 768px) {
+  .notification-btn {
+    width: 100% !important;
+    border-radius: 25px !important;
+    font-size: 1rem !important;
+    padding: 0.875rem 1.5rem !important;
+    height: auto !important;
+    gap: 0.75rem !important;
+    box-shadow: 
+      0 4px 15px rgba(37,99,235,0.25),
+      0 2px 6px rgba(0,0,0,0.1),
+      inset 0 1px 0 rgba(255,255,255,0.2) !important;
+  }
+  
+  .notification-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 
+      0 6px 20px rgba(37,99,235,0.35),
+      0 4px 10px rgba(0,0,0,0.15),
+      inset 0 1px 0 rgba(255,255,255,0.3) !important;
+  }
+  
+  .notification-btn .notification-badge {
+    position: static !important;
+    margin-left: auto !important;
+    min-width: 20px !important;
+  }
+  
+  /* Mobile notification pane adjustments */
+  .notification-pane {
+    width: 100% !important;
+    max-width: 100vw !important;
+    border-radius: 0 !important;
+  }
+  
+  .notification-content {
+    padding: 1rem !important;
+    padding-bottom: 80px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: calc(100vh - 150px) !important; /* Ensure mobile scrolling works */
+  }
+  
+  .notification-clear-all {
+    padding: 0.875rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  /* Override for header notification button on mobile */
+  .header .notification-btn {
+    width: auto !important;
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.75rem !important;
+    min-width: 35px !important;
+    height: auto !important;
+    border-radius: 8px !important;
+  }
+  
+  /* Hide text span on mobile, keep only icon */
+  .header .notification-btn span {
+    display: none !important;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row !important;
+  }
 }

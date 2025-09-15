@@ -37,7 +37,7 @@
       display: flex !important;
       align-items: center !important;
       gap: 1rem !important;
-      margin-left: auto !important;
+      margin-left: auto ;
     }
     .header-content {
       display: flex !important;
@@ -61,12 +61,69 @@
       </div>
       <div class="header-right">
         <p class="subtitle">Beyninizin gücünü keşfedin - EEG İzleme</p>
+        <button id="notification-btn" class="notification-btn" style="display:none;" aria-label="Bildirimleri aç">
+          <i class="fa-solid fa-bell"></i>
+          <span>Bildirimler</span>
+          <div class="notification-badge" id="notification-badge" style="display:none;">0</div>
+        </button>
       </div>
     </div>
   </header>
 
   <section class="screen2 dashboard">
     <div class="dashboard-container">
+      <!-- Notification Button (always visible) -->
+
+      <!-- Enhanced Modern Notification Pane -->
+      <div id="notification-pane" class="notification-pane" style="display:none;">
+        <div class="notification-header">
+          <h3>
+            <i class="fa-solid fa-bell"></i>
+            Bildirimler
+          </h3>
+          <button id="close-notification" class="close-notification" aria-label="Bildirimleri kapat">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="notification-content" id="notification-content">
+          <!-- Loading state -->
+          <div class="notification-loading" id="notification-loading" style="display:none;">
+            <div class="loading-spinner"></div>
+          </div>
+          
+          <!-- Empty state -->
+          <div class="notification-empty" id="notification-empty" style="display:none;">
+            <i class="fa-solid fa-bell-slash"></i>
+            <h4>Henüz bildirim yok</h4>
+            <p>Yeni bildirimler burada görünecek</p>
+          </div>
+          
+          <!-- Dynamic notification items will be inserted here -->
+          <div id="notification-items">
+            <!-- Example notification items (will be replaced by dynamic content) -->
+            <div class="notification-item notification-success">
+              <i class="fa-solid fa-check-circle"></i>
+              <div class="notification-text">
+                <div>Sistem başarıyla başlatıldı</div>
+                <div class="notification-time">Az önce</div>
+              </div>
+            </div>
+            <div class="notification-item notification-info">
+              <i class="fa-solid fa-info-circle"></i>
+              <div class="notification-text">
+                <div>EEG verileri canlı olarak izleniyor</div>
+                <div class="notification-time">2 dakika önce</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Clear all notifications button -->
+        <div class="notification-clear-all" id="clear-all-notifications" onclick="clearAllNotifications()" style="display:none;">
+          <i class="fa-solid fa-trash"></i>
+          Tüm bildirimleri temizle
+        </div>
+      </div>
       <div class="eeg-section">
         <div class="section-header">
           <i class="fa-solid fa-wave-square"></i>
@@ -78,7 +135,6 @@
         </div>
         
         <div class="eeg-container">
-          <img src="/eeg_stream" alt="EEG Grafiği" class="eeg-display">
           <div class="eeg-overlay">
             <div class="frequency-bands">
               <div class="band alpha">
@@ -94,6 +150,10 @@
                 <div class="band-indicator"></div>
               </div>
             </div>
+          </div>
+          <div class="eeg-displays">
+            <div class="eeg-display"><img src="/eeg_stream1" alt="EEG Grafiği"></div>
+            <div class="eeg-display"><img src="/eeg_stream2" alt="EEG Grafiği"></div>
           </div>
         </div>
       </div>
@@ -119,15 +179,14 @@
 
         <!-- Action buttons moved to info panel -->
         <div class="action-buttons">
-          <a href="/focus" class="action-btn primary">
+          <a style="margin-bottom: 10px;" href="/focus" class="action-btn primary">
             <i class="fa-solid fa-spa"></i>
             <span>Odaklanma Terapisi</span>
           </a>
-          
-          <button class="action-btn secondary" onclick="resetData()">
+          <a class="action-btn secondary" onclick="resetData()">
             <i class="fa-solid fa-refresh"></i>
             <span>Sistemi Sıfırla</span>
-          </button>
+          </a>
         </div>
       </div>
     </div>
@@ -196,6 +255,9 @@
     }
   </script>
   
+  <script src="../static/js/modal-system.js"></script>
   <script src="../static/js/pwa.js"></script>
+  <script src="../static/js/notifications.js"></script>
+  <script src="../static/js/app.js"></script>
 </body>
 </html>
