@@ -227,7 +227,7 @@ body::after {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: var(--border-radius-lg);
-  padding: 3rem 4rem;
+  padding: 2rem 2.5rem; /* Reduced from 3rem 4rem */
   text-align: center;
   position: relative;
   transition: var(--transition);
@@ -235,7 +235,7 @@ body::after {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   overflow: hidden;
-  min-height: 300px;
+  min-height: 220px; /* Reduced from 300px */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -261,9 +261,9 @@ body::after {
 }
 
 .icon-container {
-  width: 150px;
-  height: 150px;
-  margin: 0 auto 2rem;
+  width: 100px; /* Reduced from 150px */
+  height: 100px; /* Reduced from 150px */
+  margin: 0 auto 1.5rem; /* Reduced from 2rem */
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -312,7 +312,7 @@ body::after {
 
 .hydration i {
   color: var(--primary-color);
-  font-size: 5rem;
+  font-size: 3.5rem; /* Reduced from 5rem */
 }
 
 .climate .icon-container {
@@ -321,7 +321,7 @@ body::after {
 
 .climate i {
   color: var(--secondary-color);
-  font-size: 5rem;
+  font-size: 3.5rem; /* Reduced from 5rem */
 }
 
 .toilet .icon-container {
@@ -330,7 +330,7 @@ body::after {
 
 .toilet i {
   color: var(--warning-color);
-  font-size: 5rem;
+  font-size: 3.5rem; /* Reduced from 5rem */
 }
 
 .sos .icon-container {
@@ -339,7 +339,7 @@ body::after {
 
 .sos i {
   color: var(--danger-color);
-  font-size: 5rem;
+  font-size: 3.5rem; /* Reduced from 5rem */
 }
 
 /* Progress Bar */
@@ -714,12 +714,12 @@ body::after {
   }
   
   .icon-container {
-    width: 120px;
-    height: 120px;
+    width: 80px; /* Reduced from 120px */
+    height: 80px; /* Reduced from 120px */
   }
   
   .hydration i, .climate i, .toilet i, .sos i {
-    font-size: 4rem;
+    font-size: 2.8rem; /* Reduced from 4rem */
   }
   
   .cell h3 {
@@ -775,12 +775,12 @@ body::after {
   }
   
   .icon-container {
-    width: 100px;
-    height: 100px;
+    width: 70px; /* Reduced for mobile */
+    height: 70px; /* Reduced for mobile */
   }
   
   .hydration i, .climate i, .toilet i, .sos i {
-    font-size: 3.5rem;
+    font-size: 2.5rem; /* Reduced from 3.5rem */
   }
   
   .cell h3 {
