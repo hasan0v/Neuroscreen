@@ -369,9 +369,11 @@
             // Mark as calibrated in session storage
             sessionStorage.setItem('neuroscreen_calibrated', 'true');
             
-            // Start session timer now
-            const sessionStartTime = Date.now();
-            sessionStorage.setItem('neuroscreen_session_start', sessionStartTime.toString());
+            // Start session timer now (only if not already set)
+            if (!sessionStorage.getItem('neuroscreen_session_start')) {
+              const sessionStartTime = Date.now();
+              sessionStorage.setItem('neuroscreen_session_start', sessionStartTime.toString());
+            }
             
             setTimeout(() => {
               overlay.classList.add('fade-out');
