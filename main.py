@@ -110,21 +110,10 @@ def send_telegram_message(message: str, bot_token: str = BOT_TOKEN, chat_id: str
     try:
         # Added timeout to prevent hanging
         response = requests.post(url, data=payload, timeout=10)
-        print(f"Telegram API response: {response.status_code} {response.text}")
-        
-        # Log success/failure to a file for debugging on server
-        with open('telegram_debug.log', 'a') as f:
-            f.write(f"SUCCESS: {response.status_code} - {response.text}\n")
-            
+        # print(f"Telegram API response: {response.status_code} {response.text}")
         return response.json()
     except Exception as e:
-        error_msg = f"Error sending Telegram message: {str(e)}"
-        print(error_msg)
-        
-        # Log error to a file
-        with open('telegram_debug.log', 'a') as f:
-            f.write(f"ERROR: {error_msg}\n")
-            
+        print(f"Error sending Telegram message: {str(e)}")
         return None
 
 def send_telegram_async(message):
@@ -194,16 +183,19 @@ def push_data():
         if not data:
             return jsonify({"error": "JSON göndərin"}), 400
 
-        # Update DB
-        update_state(data)
-
-        # Send notification about needs
+        # 1. Send notification IMMEDIATELY (Async) - Prioritize this!
         notif_msg = parse_and_format_notification(data)
         if notif_msg:
             send_telegram_async(notif_msg)
-            # Add each line as a notification item
+
+        # 2. Update DB (might block slightly)
+        update_state(data)
+
+        # 3. Add local notification
+        if notif_msg:
             for line in notif_msg.split('\n'):
                 add_local_notification(f"<i class='fa-solid fa-bell'></i> {line}")
+                
         return jsonify({"status": "success", "data_received": data})
     except Exception as e:
         import traceback
