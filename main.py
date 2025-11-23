@@ -62,14 +62,20 @@ init_db()
 NOTIFICATION_FILE = 'notifications.log'
 
 def add_local_notification(message: str):
-    with open(NOTIFICATION_FILE, 'a', encoding='utf-8') as f:
-        f.write(message + '\n')
+    try:
+        with open(NOTIFICATION_FILE, 'a', encoding='utf-8') as f:
+            f.write(message + '\n')
+    except Exception as e:
+        print(f"Error writing notification: {e}")
 
 def get_local_notifications():
     if not os.path.exists(NOTIFICATION_FILE):
         return []
-    with open(NOTIFICATION_FILE, 'r', encoding='utf-8') as f:
-        return [line.strip() for line in f if line.strip()]
+    try:
+        with open(NOTIFICATION_FILE, 'r', encoding='utf-8') as f:
+            return [line.strip() for line in f if line.strip()]
+    except Exception:
+        return []
 
 def remove_local_notification(index: int):
     """Remove a specific notification by index"""
@@ -165,19 +171,24 @@ def get_data():
 
 @app.route("/reset_data", methods=["GET"])
 def reset_data():
-    default_data = {
-        "first": 0,
-        "second": 0,
-        "third": 0,
-        "fifth": 0
-    }
-    update_state(default_data)
-    
-    # Send notification for system reset
-    notif_msg = "<i class='fa-solid fa-info-circle'></i> Sistem başarıyla sıfırlandı."
-    send_telegram_async("<b>Sistem başarıyla sıfırlandı!</b>")
-    add_local_notification(notif_msg)
-    return jsonify({"status": "success", "message": "Sistem sıfırlandı", "data": default_data})
+    try:
+        default_data = {
+            "first": 0,
+            "second": 0,
+            "third": 0,
+            "fifth": 0
+        }
+        update_state(default_data)
+        
+        # Send notification for system reset
+        notif_msg = "<i class='fa-solid fa-info-circle'></i> Sistem başarıyla sıfırlandı."
+        send_telegram_async("<b>Sistem başarıyla sıfırlandı!</b>")
+        add_local_notification(notif_msg)
+        return jsonify({"status": "success", "message": "Sistem sıfırlandı", "data": default_data})
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/push_data", methods=["POST"])
 def push_data():

@@ -47,8 +47,9 @@ def internal_error(error):
     # Log the error if possible
     import traceback
     traceback.print_exc()
+    # Return the actual error message for debugging
     return app.response_class(
-        response='{"error": "Sunucu hatası"}',
+        response=f'{{"error": "Sunucu hatası: {str(error)}"}}',
         status=500,
         mimetype='application/json'
     )
