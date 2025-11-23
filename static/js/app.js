@@ -56,60 +56,6 @@ function resetInactivityTimer() {
   }, 5000);
 }
 
-// Enhanced visual feedback system
-function createRippleEffect(element, x, y) {
-  const ripple = document.createElement('div');
-  ripple.style.cssText = `
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: rgba(37, 99, 235, 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    animation: ripple 0.6s linear;
-    left: ${x}px;
-    top: ${y}px;
-  `;
-  
-  element.appendChild(ripple);
-  setTimeout(() => ripple.remove(), 600);
-}
-
-// Add ripple animation to CSS
-if (!document.getElementById('ripple-styles')) {
-  const style = document.createElement('style');
-  style.id = 'ripple-styles';
-  style.textContent = `
-    @keyframes ripple {
-      to {
-        transform: translate(-50%, -50%) scale(4);
-        opacity: 0;
-      }
-    }
-    
-    .cell-activating {
-      animation: pulse-glow 5s ease-in-out;
-    }
-    
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-      50% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.5); }
-    }
-    
-    .success-feedback {
-      animation: success-pulse 0.5s ease-out;
-    }
-    
-    @keyframes success-pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-  `;
-  document.head.appendChild(style);
-}
-
 // Enhanced interaction handlers
 cells.forEach((cell, index) => {
   let timer = null;
@@ -129,12 +75,6 @@ cells.forEach((cell, index) => {
     
     activeTimer = timer;
     activeCell = cell;
-    
-    // Create ripple effect at interaction point
-    if (event.type === 'mouseenter') {
-      const rect = cell.getBoundingClientRect();
-      createRippleEffect(cell, event.clientX - rect.left, event.clientY - rect.top);
-    }
     
     let width = 0;
     progressBar.style.width = '0%';
