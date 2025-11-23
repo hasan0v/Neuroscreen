@@ -13,11 +13,7 @@ class NeuroScreenPWA {
     this.handleInstallPrompt();
     
     // Handle app updates
-    this.handleAppUpdates();
-    
-    // Add install button
-    this.addInstallButton();
-    
+    // this.handleAppUpdates(); // Removed as it's not defined
     // Handle network status
     this.handleNetworkStatus();
     

@@ -37,7 +37,11 @@ def get_state():
 def update_state(new_data):
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
+    # Ensure we are updating the existing row, not inserting a new one if it exists
     c.execute('UPDATE state SET data=? WHERE id=1', (json.dumps(new_data),))
+    if c.rowcount == 0:
+        # If no row was updated (e.g. table was empty), insert it
+        c.execute('INSERT INTO state (id, data) VALUES (1, ?)', (json.dumps(new_data),))
     conn.commit()
     conn.close()
 
