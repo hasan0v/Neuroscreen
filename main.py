@@ -159,21 +159,26 @@ def reset_data():
 
 @app.route("/push_data", methods=["POST"])
 def push_data():
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "JSON göndərin"}), 400
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "JSON göndərin"}), 400
 
-    # Update DB
-    update_state(data)
+        # Update DB
+        update_state(data)
 
-    # Send notification about needs
-    notif_msg = parse_and_format_notification(data)
-    if notif_msg:
-        send_telegram_async(notif_msg)
-        # Add each line as a notification item
-        for line in notif_msg.split('\n'):
-            add_local_notification(f"<i class='fa-solid fa-bell'></i> {line}")
-    return jsonify({"status": "success", "data_received": data})
+        # Send notification about needs
+        notif_msg = parse_and_format_notification(data)
+        if notif_msg:
+            send_telegram_async(notif_msg)
+            # Add each line as a notification item
+            for line in notif_msg.split('\n'):
+                add_local_notification(f"<i class='fa-solid fa-bell'></i> {line}")
+        return jsonify({"status": "success", "data_received": data})
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
 
 # Endpoint to get notifications for frontend
 @app.route('/get_notifications')
