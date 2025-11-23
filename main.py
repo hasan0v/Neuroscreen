@@ -180,10 +180,7 @@ def reset_data():
         }
         update_state(default_data)
         
-        # Send notification for system reset
-        notif_msg = "<i class='fa-solid fa-info-circle'></i> Sistem başarıyla sıfırlandı."
-        send_telegram_async("<b>Sistem başarıyla sıfırlandı!</b>")
-        add_local_notification(notif_msg)
+        # Notifications removed as per user request
         return jsonify({"status": "success", "message": "Sistem sıfırlandı", "data": default_data})
     except Exception as e:
         import traceback
