@@ -48,6 +48,12 @@ class NeuroScreenPWA {
       console.log('NeuroScreen PWA: Install prompt triggered');
       e.preventDefault();
       this.deferredPrompt = e;
+      
+      // Add install button if it doesn't exist
+      if (!document.getElementById('pwa-install-banner')) {
+        this.addInstallButton();
+      }
+      
       this.showInstallButton();
     });
 
