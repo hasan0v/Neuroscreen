@@ -916,12 +916,15 @@ html, body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: radial-gradient(circle at top right, rgba(0, 113, 227, 0.15), transparent 50%), 
+              radial-gradient(circle at bottom left, rgba(94, 92, 230, 0.15), transparent 50%),
+              linear-gradient(135deg, #f2f6fa 0%, #e3e8ef 100%);
   z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.5s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
 }
 
 .startup-overlay.fade-out {
@@ -930,70 +933,99 @@ html, body {
 
 .startup-content {
   text-align: center;
-  color: white;
-  max-width: 500px;
-  padding: 40px;
+  max-width: 600px;
+  padding: 60px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 .startup-icon {
-  font-size: 80px;
-  margin-bottom: 30px;
-  animation: pulse 2s infinite;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 32px;
+  background: linear-gradient(135deg, #0071e3 0%, #5e5ce6 100%);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: white;
+  animation: pulse-icon 2s ease-in-out infinite;
+  box-shadow: 0 10px 30px rgba(0, 113, 227, 0.3);
+}
+
+@keyframes pulse-icon {
+  0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(0, 113, 227, 0.3); }
+  50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(0, 113, 227, 0.4); }
 }
 
 .startup-content h2 {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 700;
-  margin-bottom: 20px;
-  color: white;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
 .startup-content p {
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.6;
   margin-bottom: 40px;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-secondary);
+  font-weight: 400;
 }
 
 .startup-btn {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: var(--primary-color);
+  border: none;
   color: white;
-  padding: 16px 40px;
-  border-radius: 50px;
-  font-size: 18px;
+  padding: 18px 48px;
+  border-radius: 999px;
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   display: inline-flex;
   align-items: center;
   gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 113, 227, 0.3);
+  font-family: inherit;
 }
 
 .startup-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: #0077ed;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(0, 113, 227, 0.4);
+}
+
+.startup-btn:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .startup-status {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
+  margin-top: 40px;
 }
 
 .startup-status p {
   margin-bottom: 0;
-  font-size: 16px;
+  font-size: 17px;
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 .calibration-spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(0, 113, 227, 0.1);
+  border-top-color: var(--primary-color);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 24px;
 }
 
 @keyframes spin {

@@ -326,10 +326,11 @@
         function runStep() {
           if (currentStep < steps.length) {
             calibrationText.textContent = steps[currentStep].text;
+            const currentDuration = steps[currentStep].duration;
+            currentStep++;
             setTimeout(() => {
-              currentStep++;
               runStep();
-            }, steps[currentStep - 1].duration);
+            }, currentDuration);
           } else {
             // Calibration complete
             calibrationText.textContent = 'Calibration successful!';
