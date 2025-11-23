@@ -473,7 +473,7 @@ function startNotificationPolling() {
     if (!pane || pane.style.display === 'none') {
       fetchNotifications();
     }
-  }, 30000);
+  }, 5000);
 }
 
 // Stop notification polling

@@ -268,9 +268,15 @@
     }
   </script>
   
-  <script src="../static/js/modal-system.js"></script>
-  <script src="../static/js/pwa.js"></script>
-  <script src="../static/js/notifications.js"></script>
-  <script src="../static/js/app.js"></script>
+  <script src="../static/js/modal-system.js?v=1.0"></script>
+  <script src="../static/js/pwa.js?v=1.0"></script>
+  <script src="../static/js/notifications.js?v=1.0"></script>
+  <script src="../static/js/app.js?v=1.1"></script>
+  <script>
+    // Force reload of scripts if needed
+    document.querySelectorAll('script[src^="../static/js/"]').forEach(script => {
+      script.src += '&t=' + Date.now();
+    });
+  </script>
 </body>
 </html>

@@ -24,10 +24,18 @@ def simulate_eeg_and_fft(data=None):
         data = {"first": 0, "second": 0, "third": 0, "fifth": 0}
 
     eeg = np.zeros_like(t)
+    
+    # ALWAYS add a base "alive" signal (simulating basic brain activity)
+    # This ensures the chart is never completely flat
+    eeg += 5.0 * np.sin(2 * np.pi * 0.5 * t) # Slow 0.5Hz breathing rhythm
+    
     for bg_name, bg_info in background_frequencies.items():
         freq_variation = np.random.uniform(-0.5, 0.5)
         amplitude_variation = np.random.uniform(0.8, 1.2)
-        eeg += bg_info["amp"] * amplitude_variation * np.sin(2 * np.pi * (bg_info["freq"] + freq_variation) * t)
+        # Add phase shift for more natural look
+        phase_shift = np.random.uniform(0, 2*np.pi)
+        eeg += bg_info["amp"] * amplitude_variation * np.sin(2 * np.pi * (bg_info["freq"] + freq_variation) * t + phase_shift)
+    
     freqs = np.fft.fftfreq(len(t), 1/fs)
     freqs[0] = 1
     noise_spectrum = 1 / np.abs(freqs)
