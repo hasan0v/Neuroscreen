@@ -102,11 +102,23 @@ def send_telegram_message(message: str, bot_token: str = BOT_TOKEN, chat_id: str
         "parse_mode": "HTML"
     }
     try:
-        response = requests.post(url, data=payload)
+        # Added timeout to prevent hanging
+        response = requests.post(url, data=payload, timeout=10)
         print(f"Telegram API response: {response.status_code} {response.text}")
+        
+        # Log success/failure to a file for debugging on server
+        with open('telegram_debug.log', 'a') as f:
+            f.write(f"SUCCESS: {response.status_code} - {response.text}\n")
+            
         return response.json()
     except Exception as e:
-        print(f"Error sending Telegram message: {e}")
+        error_msg = f"Error sending Telegram message: {str(e)}"
+        print(error_msg)
+        
+        # Log error to a file
+        with open('telegram_debug.log', 'a') as f:
+            f.write(f"ERROR: {error_msg}\n")
+            
         return None
 
 def send_telegram_async(message):
