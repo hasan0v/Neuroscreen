@@ -224,16 +224,7 @@
 
   <script>
     // Session timer
-    let startTime;
-    
-    // Get session start time (will be set after calibration completes)
-    const storedStartTime = sessionStorage.getItem('neuroscreen_session_start');
-    if (storedStartTime) {
-      startTime = parseInt(storedStartTime);
-    } else {
-      // Don't set start time yet - wait for calibration to complete
-      startTime = Date.now(); // Temporary placeholder
-    }
+    let startTime = 0;
     
     function updateTimer() {
       const currentStartTime = sessionStorage.getItem('neuroscreen_session_start');
@@ -339,7 +330,9 @@
       if (isCalibrated === 'true') {
         // Skip calibration if already done in this session
         overlay.style.display = 'none';
-        return;
+      } else {
+        // Show calibration overlay
+        overlay.style.display = 'flex';
       }
       
       startBtn.addEventListener('click', function() {
@@ -377,11 +370,8 @@
             sessionStorage.setItem('neuroscreen_calibrated', 'true');
             
             // Start session timer now
-            if (!sessionStorage.getItem('neuroscreen_session_start')) {
-              const sessionStartTime = Date.now();
-              sessionStorage.setItem('neuroscreen_session_start', sessionStartTime.toString());
-              startTime = sessionStartTime;
-            }
+            const sessionStartTime = Date.now();
+            sessionStorage.setItem('neuroscreen_session_start', sessionStartTime.toString());
             
             setTimeout(() => {
               overlay.classList.add('fade-out');
