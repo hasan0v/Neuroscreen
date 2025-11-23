@@ -9,21 +9,21 @@
   --success-color: #34c759;
   
   /* Backgrounds */
-  --bg-primary: #f5f5f7; /* Apple Light Gray Background */
+  --bg-primary: #eef1f5; /* Darker, cooler background */
   --bg-secondary: #ffffff;
-  --bg-glass: rgba(255, 255, 255, 0.85);
-  --bg-glass-dark: rgba(28, 28, 30, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.7); /* More transparent for glass effect */
+  --bg-glass-dark: rgba(28, 28, 30, 0.75);
   
   /* Text */
   --text-primary: #1d1d1f;
-  --text-secondary: #86868b;
+  --text-secondary: #6e6e73; /* Darker secondary text for better contrast */
   --text-light: #ffffff;
   
   /* Borders & Shadows */
-  --border-color: rgba(0, 0, 0, 0.0); /* Removed borders for cleaner look */
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
-  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.12);
+  --border-color: rgba(0, 0, 0, 0.0); 
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.12);
   
   /* Layout */
   --border-radius: 24px; /* Larger, smoother corners */
@@ -44,7 +44,11 @@ html, body {
   height: 100%; 
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   line-height: 1.5;
-  background-color: var(--bg-primary);
+  /* Premium subtle gradient background to reduce whiteness */
+  background: radial-gradient(circle at top right, rgba(0, 113, 227, 0.08), transparent 40%), 
+              radial-gradient(circle at bottom left, rgba(94, 92, 230, 0.08), transparent 40%),
+              linear-gradient(135deg, #f2f6fa 0%, #e3e8ef 100%);
+  background-attachment: fixed;
   color: var(--text-primary);
   overflow-x: hidden;
 }
@@ -166,11 +170,11 @@ html, body {
 
 /* Cards - Clean & Minimal */
 .eeg-section, .info-card, .cell {
-  background: var(--bg-secondary);
+  background: linear-gradient(180deg, #ffffff 0%, #fcfcfd 100%); /* Subtle gradient */
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
-  border: none; /* Removed border */
+  border: 1px solid rgba(255, 255, 255, 0.6); /* Glassy border */
   overflow: hidden;
 }
 
@@ -240,13 +244,14 @@ html, body {
 
 .eeg-container {
   /* flex: 1; Removed to prevent flex growth */
-  background: #ffffff; /* Pure white for chart area */
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9fb 100%); /* Subtle gradient */
   border-radius: 20px;
   position: relative;
   height: 600px; /* Fixed height to prevent infinite loop */
   padding: 24px; /* Restore padding */
   overflow: hidden;
   display: block; /* Ensure block formatting context */
+  border: 1px solid rgba(0, 0, 0, 0.03);
 }
 
 .eeg-displays {
@@ -677,23 +682,32 @@ html, body {
 /* Notification Button in Header */
 .notification-btn {
   position: relative;
-  background: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.5); /* Glassy background */
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  padding: 8px 16px;
-  border-radius: 999px; /* Pill shape */
-  transition: all 0.2s ease;
+  padding: 10px 20px; /* Larger padding */
+  border-radius: 999px;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: 600;
   font-family: inherit;
   font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .notification-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.notification-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .notification-btn i {
@@ -710,7 +724,7 @@ html, body {
     display: none; /* Hide text on mobile */
   }
   .notification-btn {
-    padding: 10px;
+    padding: 12px;
     border-radius: 50%; /* Circle on mobile */
   }
 }
@@ -750,18 +764,139 @@ html, body {
 }
 
 .modern-modal-content {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(40px) saturate(180%);
-  border-radius: 24px;
-  padding: 40px;
-  max-width: 480px;
+  background: rgba(255, 255, 255, 0.95); /* More opaque */
+  backdrop-filter: blur(50px) saturate(180%);
+  border-radius: 32px; /* More rounded */
+  padding: 0; /* Reset padding for internal layout */
+  max-width: 440px;
   width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  animation: slideInModal 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   position: relative;
+  animation: slideInModal 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.modern-modal-header {
+  padding: 40px 40px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.modern-modal-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.modern-modal-icon.info { background: rgba(0, 113, 227, 0.1); color: var(--primary-color); }
+.modern-modal-icon.success { background: rgba(52, 199, 89, 0.1); color: var(--success-color); }
+.modern-modal-icon.warning { background: rgba(255, 159, 10, 0.1); color: var(--warning-color); }
+.modern-modal-icon.error { background: rgba(255, 59, 48, 0.1); color: var(--danger-color); }
+.modern-modal-icon.question { background: rgba(94, 92, 230, 0.1); color: var(--secondary-color); }
+
+.modern-modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modern-modal-body {
+  padding: 0 40px 32px 40px;
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.modern-modal-footer {
+  padding: 24px 40px 40px 40px;
+  width: 100%;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.modern-modal-btn {
+  flex: 1;
+  padding: 14px 24px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.modern-modal-btn.primary {
+  background: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+}
+
+.modern-modal-btn.primary:hover {
+  background: #0077ed;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 113, 227, 0.4);
+}
+
+.modern-modal-btn.secondary {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+}
+
+.modern-modal-btn.secondary:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.modern-modal-btn.danger {
+  background: var(--danger-color);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+}
+
+.modern-modal-btn.danger:hover {
+  background: #ff453a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 59, 48, 0.4);
+}
+
+.modern-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modern-modal-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
 }
 
 @keyframes fadeInModal {
