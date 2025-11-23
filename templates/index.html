@@ -239,11 +239,18 @@
     
     // Reset function
     function resetData() {
+      // Clear calibration flag to show calibration on next page load
+      sessionStorage.removeItem('neuroscreen_calibrated');
+      
       fetch('/reset_data')
         .then(response => response.json())
         .then(data => {
           showResetSuccessNotification();
           startTime = Date.now();
+          // Reload page to show calibration again
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         })
         .catch(error => console.error('Error:', error));
     }
@@ -306,6 +313,15 @@
       const status = document.getElementById('startup-status');
       const calibrationText = document.getElementById('calibration-text');
       
+      // Check if already calibrated in this session
+      const isCalibrated = sessionStorage.getItem('neuroscreen_calibrated');
+      
+      if (isCalibrated === 'true') {
+        // Skip calibration if already done in this session
+        overlay.style.display = 'none';
+        return;
+      }
+      
       startBtn.addEventListener('click', function() {
         // Hide button and instructions
         startBtn.style.display = 'none';
@@ -336,6 +352,10 @@
           } else {
             // Calibration complete
             calibrationText.textContent = 'Calibration successful!';
+            
+            // Mark as calibrated in session storage
+            sessionStorage.setItem('neuroscreen_calibrated', 'true');
+            
             setTimeout(() => {
               overlay.classList.add('fade-out');
               setTimeout(() => {
