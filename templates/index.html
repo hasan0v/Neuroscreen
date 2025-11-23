@@ -196,7 +196,7 @@
         <div class="info-card">
           <i class="fa-solid fa-clock"></i>
           <h3>Session Duration</h3>
-          <p id="session-time">00:00:00</p>
+          <p id="session-time"></p>
         </div>
         
         <div class="info-card">
@@ -227,10 +227,12 @@
     let startTime = 0;
     
     function updateTimer() {
+      const sessionTimeElement = document.getElementById('session-time');
       const currentStartTime = sessionStorage.getItem('neuroscreen_session_start');
+      
       if (!currentStartTime) {
         // Calibration not complete yet, show 00:00:00
-        document.getElementById('session-time').textContent = '00:00:00';
+        sessionTimeElement.textContent = '00:00:00';
         return;
       }
       
@@ -240,12 +242,14 @@
       const minutes = Math.floor((elapsed % 3600000) / 60000);
       const seconds = Math.floor((elapsed % 60000) / 1000);
       
-      document.getElementById('session-time').textContent = 
+      sessionTimeElement.textContent = 
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
     
+    // Initial call immediately on page load
+    updateTimer();
+    // Then update every second
     setInterval(updateTimer, 1000);
-    updateTimer(); // Initial call
     
     // Reset function
     function resetData() {
@@ -258,10 +262,8 @@
         .then(response => response.json())
         .then(data => {
           showResetSuccessNotification();
-          // Reload page to show calibration again and reset timer
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
+          // Reload page immediately to show calibration again and reset timer
+          location.reload();
         })
         .catch(error => console.error('Error:', error));
     }
