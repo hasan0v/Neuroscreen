@@ -25,25 +25,35 @@ def init_db():
     conn.close()
 
 def get_state():
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute('SELECT data FROM state WHERE id=1')
-    row = c.fetchone()
-    conn.close()
-    if row:
-        return json.loads(row[0])
-    return {"first": 0, "second": 0, "third": 0, "fifth": 0}
+    try:
+        conn = sqlite3.connect(DB_FILE, timeout=10)
+        c = conn.cursor()
+        c.execute('SELECT data FROM state WHERE id=1')
+        row = c.fetchone()
+        conn.close()
+        if row:
+            return json.loads(row[0])
+        return {"first": 0, "second": 0, "third": 0, "fifth": 0}
+    except Exception as e:
+        print(f"Error reading state: {e}")
+        return {"first": 0, "second": 0, "third": 0, "fifth": 0}
 
 def update_state(new_data):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    # Ensure we are updating the existing row, not inserting a new one if it exists
-    c.execute('UPDATE state SET data=? WHERE id=1', (json.dumps(new_data),))
-    if c.rowcount == 0:
-        # If no row was updated (e.g. table was empty), insert it
-        c.execute('INSERT INTO state (id, data) VALUES (1, ?)', (json.dumps(new_data),))
-    conn.commit()
-    conn.close()
+    try:
+        conn = sqlite3.connect(DB_FILE, timeout=10)  # Increased timeout
+        c = conn.cursor()
+        # Ensure we are updating the existing row, not inserting a new one if it exists
+        c.execute('UPDATE state SET data=? WHERE id=1', (json.dumps(new_data),))
+        if c.rowcount == 0:
+            # If no row was updated (e.g. table was empty), insert it
+            c.execute('INSERT INTO state (id, data) VALUES (1, ?)', (json.dumps(new_data),))
+        conn.commit()
+    except sqlite3.OperationalError as e:
+        print(f"Database error: {e}")
+        raise  # Re-raise to be caught by the route handler
+    finally:
+        if conn:
+            conn.close()
 
 # Initialize DB on startup
 init_db()

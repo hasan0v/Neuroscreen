@@ -44,6 +44,9 @@ def not_found_error(error):
 @app.errorhandler(500)
 def internal_error(error):
     """Handle 500 errors"""
+    # Log the error if possible
+    import traceback
+    traceback.print_exc()
     return app.response_class(
         response='{"error": "Sunucu hatası"}',
         status=500,
