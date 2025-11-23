@@ -569,13 +569,8 @@ function createToastNotification(message, type = 'info', icon = 'fa-info-circle'
 // Enhanced visibility handling
 function handleNotificationBtnVisibility() {
   const btn = document.getElementById('notification-btn');
-  const pane = document.getElementById('notification-pane');
-  
-  if (window.innerWidth < 768) {
-    if (btn) btn.style.display = 'flex';
-  } else {
-    if (btn) btn.style.display = 'none';
-    if (pane) pane.style.display = 'none';
+  if (btn) {
+    btn.style.display = 'flex';
   }
 }
 

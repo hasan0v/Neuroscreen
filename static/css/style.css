@@ -337,7 +337,7 @@ html, body {
   gap: 32px;
   padding-top: calc(var(--header-height) + 40px);
   padding-bottom: 40px;
-  max-width: 1000px;
+  max-width: 1200px; /* Increased from 1000px to match dashboard */
   margin: 0 auto;
   padding-left: 24px;
   padding-right: 24px;
@@ -680,9 +680,16 @@ html, body {
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 10px;
-  border-radius: 50%;
-  transition: background 0.2s;
+  padding: 8px 16px;
+  border-radius: 999px; /* Pill shape */
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-family: inherit;
+  font-size: 14px;
 }
 
 .notification-btn:hover {
@@ -690,8 +697,22 @@ html, body {
 }
 
 .notification-btn i {
-  font-size: 22px;
+  font-size: 18px;
   color: var(--text-primary);
+}
+
+.notification-btn span {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .notification-btn span {
+    display: none; /* Hide text on mobile */
+  }
+  .notification-btn {
+    padding: 10px;
+    border-radius: 50%; /* Circle on mobile */
+  }
 }
 
 .notification-badge {
