@@ -256,14 +256,15 @@ html, body {
 }
 
 .eeg-display {
-  flex: 1;
   position: relative;
   width: 100%;
-  min-height: 0; /* Critical for flexbox scrolling/sizing */
+  height: 50%; /* Explicit height instead of flex: 1 */
+  min-height: 0;
   overflow: hidden;
 }
 
 .eeg-display canvas {
+  display: block; /* Prevent inline spacing issues */
   width: 100% !important;
   height: 100% !important;
 }
@@ -340,18 +341,17 @@ html, body {
 }
 
 .cell {
-  /* aspect-ratio: 1; Removed to fix size issue */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 32px; /* Reduced padding */
+  padding: 32px;
   cursor: pointer;
   position: relative;
   text-align: center;
   background: var(--bg-secondary);
   border-radius: 32px;
-  min-height: 250px; /* Ensure consistent height without forcing square */
+  height: 300px; /* Fixed height for consistency */
 }
 
 .cell:hover {
