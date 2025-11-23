@@ -225,6 +225,7 @@
   <script>
     // Session timer
     let startTime = 0;
+    let timerInterval = null;
     
     function updateTimer() {
       const sessionTimeElement = document.getElementById('session-time');
@@ -246,10 +247,15 @@
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
     
+    // Clear any existing interval first
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    
     // Initial call immediately on page load
     updateTimer();
     // Then update every second
-    setInterval(updateTimer, 1000);
+    timerInterval = setInterval(updateTimer, 1000);
     
     // Reset function
     function resetData() {
