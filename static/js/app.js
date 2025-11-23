@@ -317,7 +317,7 @@ class EEGChartManager {
   constructor() {
     this.timeChart = null;
     this.freqChart = null;
-    this.refreshInterval = 250; // 250ms for smoother updates
+    this.refreshInterval = 1000; // 1 second
     this.isRefreshing = false;
     this.refreshTimer = null;
     this.initCharts();
@@ -435,12 +435,6 @@ class EEGChartManager {
 
   updateCharts(data) {
     if (!data || !this.timeChart || !this.freqChart) return;
-
-    // Check for flatline data (all zeros or constant)
-    const isFlat = data.eeg_values.every(val => Math.abs(val) < 0.01);
-    if (isFlat) {
-        console.warn('Received flatline EEG data - check backend simulation');
-    }
 
     // Update Time Chart
     this.timeChart.data.labels = data.time_labels.map(t => t.toFixed(2));
