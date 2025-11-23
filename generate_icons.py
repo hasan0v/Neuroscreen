@@ -49,6 +49,32 @@ def create_pwa_icons():
     favicon.save(f"{icons_dir}/favicon.ico", "ICO")
     print("Created favicon.ico")
     
+    # Create shortcut icons
+    shortcut_icon = create_icon(96)
+    shortcut_icon.save(f"{icons_dir}/eeg-shortcut.png", "PNG")
+    print("Created eeg-shortcut.png")
+    shortcut_icon.save(f"{icons_dir}/focus-shortcut.png", "PNG")
+    print("Created focus-shortcut.png")
+
+    # Create screenshots directory
+    screenshots_dir = "static/screenshots"
+    os.makedirs(screenshots_dir, exist_ok=True)
+
+    # Create dummy screenshots
+    def create_screenshot(width, height, color):
+        img = Image.new('RGB', (width, height), color)
+        draw = ImageDraw.Draw(img)
+        draw.text((width//2, height//2), "Screenshot", fill=(255, 255, 255))
+        return img
+
+    desktop_ss = create_screenshot(1280, 720, (37, 99, 235))
+    desktop_ss.save(f"{screenshots_dir}/desktop-screenshot.png", "PNG")
+    print("Created desktop-screenshot.png")
+
+    mobile_ss = create_screenshot(375, 667, (37, 99, 235))
+    mobile_ss.save(f"{screenshots_dir}/mobile-screenshot.png", "PNG")
+    print("Created mobile-screenshot.png")
+    
     print("All PWA icons created successfully!")
 
 if __name__ == "__main__":
