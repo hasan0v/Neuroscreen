@@ -153,37 +153,26 @@ cells.forEach((cell, index) => {
       }
     }, 100);
 
+    // Send data immediately when focus starts
+    const data = {
+      first: 0,
+      second: 0,
+      third: 0,
+      fifth: 0
+    };
+    data[name] = 1;
+
+    fetch('/push_data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).catch(err => console.error('Immediate push error:', err));
+
     timer = setTimeout(() => {
-      // Activation complete - prepare data
-      const data = {
-        first: 0,
-        second: 0,
-        third: 0,
-        fifth: 0
-      };
-
-      // Set the activated category
-      data[name] = 1;
-
-      // Send data to server
-      fetch('/push_data', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(result => {
-        console.log('Sağlık kategorisi etkinleştirildi:', result);
-        showSuccessFeedback(cell, category);
-        // Reset inactivity timer after successful activation
-        resetInactivityTimer();
-      })
-      .catch(err => {
-        console.error('Hata oluştu:', err);
-        showErrorFeedback(cell);
-      });
+      // Activation complete - show feedback
+      console.log('Sağlık kategorisi tamamlandı:', name);
+      showSuccessFeedback(cell, category);
+      resetInactivityTimer();
 
       // Clean up visual states
       cell.classList.remove('cell-activating');
