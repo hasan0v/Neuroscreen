@@ -242,10 +242,11 @@ function renderNotifications(notificationList) {
   
   container.innerHTML = '';
   
-  notificationList.forEach((notification, index) => {
-    const notificationElement = createNotificationElement(notification, index);
+  // Render in reverse order (Newest first)
+  for (let i = notificationList.length - 1; i >= 0; i--) {
+    const notificationElement = createNotificationElement(notificationList[i], i);
     container.appendChild(notificationElement);
-  });
+  }
 }
 
 // Create modern notification element
@@ -265,13 +266,10 @@ function createNotificationElement(notification, index) {
     element.classList.add('priority-high');
   }
   
-  const timeAgo = getTimeAgo(index);
-  
   element.innerHTML = `
     <i class="fa-solid ${icon}"></i>
     <div class="notification-text">
       <div>${message}</div>
-      <div class="notification-time">${timeAgo}</div>
     </div>
     <button class="notification-remove" onclick="showRemoveConfirmation(${index})" title="Remove this notification">
       <i class="fa-solid fa-times"></i>
