@@ -23,62 +23,54 @@ def simulate_eeg_and_fft(data=None):
     if data is None:
         data = {"first": 0, "second": 0, "third": 0, "fifth": 0}
 
-    # Check if system is active (any button pressed)
-    is_active = any(v == 1 for v in data.values())
-    
     eeg = np.zeros_like(t)
     
-    if is_active:
-        # Generate full EEG simulation only when active
-        for bg_name, bg_info in background_frequencies.items():
-            freq_variation = np.random.uniform(-0.5, 0.5)
-            amplitude_variation = np.random.uniform(0.8, 1.2)
-            # Add phase shift for more natural look
-            phase_shift = np.random.uniform(0, 2*np.pi)
-            eeg += bg_info["amp"] * amplitude_variation * np.sin(2 * np.pi * (bg_info["freq"] + freq_variation) * t + phase_shift)
-        
-        freqs = np.fft.fftfreq(len(t), 1/fs)
-        freqs[0] = 1
-        noise_spectrum = 1 / np.abs(freqs)
-        noise_spectrum[0] = noise_spectrum[1]
-        noise = np.fft.ifft(noise_spectrum * np.random.randn(len(freqs))).real
-        eeg += noise * 8
-        current_time = time.time()
-        wait_until = current_time - transition_duration
-        for key, button_info in mapping.items():
-            if data.get(key, 0) == 1:
-                transition_progress = min(1.0, (current_time - wait_until) / 2.0)
-                base_freq = button_info["freq"]
-                freq_modulation = 0.5 * np.sin(2 * np.pi * 0.1 * current_time)
-                actual_freq = base_freq + freq_modulation
-                base_amp = button_info["base_amp"]
-                focus_amp = button_info["focus_amp"]
-                current_amp = base_amp + (focus_amp - base_amp) * transition_progress
-                fundamental = current_amp * np.sin(2 * np.pi * actual_freq * t)
-                second_harmonic = (current_amp * 0.3) * np.sin(2 * np.pi * actual_freq * 2 * t)
-                third_harmonic = (current_amp * 0.1) * np.sin(2 * np.pi * actual_freq * 3 * t)
-                eeg += fundamental + second_harmonic + third_harmonic
-                if base_freq > 12:
-                    alpha_suppression = -8 * transition_progress * np.sin(2 * np.pi * 10 * t)
-                    eeg += alpha_suppression
-        if np.random.random() < 0.05:
-            artifact_type = np.random.choice(['blink', 'muscle', 'movement'])
-            if artifact_type == 'blink':
-                blink_time = np.random.uniform(0.5, 3.5)
-                blink_duration = 0.2
-                blink_mask = np.exp(-((t - blink_time) / (blink_duration/4))**2)
-                eeg += 60 * blink_mask * np.random.uniform(0.5, 1.5)
-            elif artifact_type == 'muscle':
-                muscle_freq = np.random.uniform(50, 80)
-                muscle_duration = np.random.uniform(0.3, 1.0)
-                muscle_start = np.random.uniform(0, 4 - muscle_duration)
-                muscle_mask = ((t >= muscle_start) & (t <= muscle_start + muscle_duration)).astype(float)
-                eeg += 25 * muscle_mask * np.sin(2 * np.pi * muscle_freq * t) * np.random.uniform(0.5, 1.5)
-        eeg += np.random.normal(0, 3, len(t))
-    else:
-        # Idle state - Straight line (very low noise to simulate "on" but disconnected/idle)
-        eeg += np.random.normal(0, 0.1, len(t))
-
+    # ALWAYS generate background brain activity
+    for bg_name, bg_info in background_frequencies.items():
+        freq_variation = np.random.uniform(-0.5, 0.5)
+        amplitude_variation = np.random.uniform(0.8, 1.2)
+        # Add phase shift for more natural look
+        phase_shift = np.random.uniform(0, 2*np.pi)
+        eeg += bg_info["amp"] * amplitude_variation * np.sin(2 * np.pi * (bg_info["freq"] + freq_variation) * t + phase_shift)
+    
+    freqs = np.fft.fftfreq(len(t), 1/fs)
+    freqs[0] = 1
+    noise_spectrum = 1 / np.abs(freqs)
+    noise_spectrum[0] = noise_spectrum[1]
+    noise = np.fft.ifft(noise_spectrum * np.random.randn(len(freqs))).real
+    eeg += noise * 8
+    current_time = time.time()
+    wait_until = current_time - transition_duration
+    for key, button_info in mapping.items():
+        if data.get(key, 0) == 1:
+            transition_progress = min(1.0, (current_time - wait_until) / 2.0)
+            base_freq = button_info["freq"]
+            freq_modulation = 0.5 * np.sin(2 * np.pi * 0.1 * current_time)
+            actual_freq = base_freq + freq_modulation
+            base_amp = button_info["base_amp"]
+            focus_amp = button_info["focus_amp"]
+            current_amp = base_amp + (focus_amp - base_amp) * transition_progress
+            fundamental = current_amp * np.sin(2 * np.pi * actual_freq * t)
+            second_harmonic = (current_amp * 0.3) * np.sin(2 * np.pi * actual_freq * 2 * t)
+            third_harmonic = (current_amp * 0.1) * np.sin(2 * np.pi * actual_freq * 3 * t)
+            eeg += fundamental + second_harmonic + third_harmonic
+            if base_freq > 12:
+                alpha_suppression = -8 * transition_progress * np.sin(2 * np.pi * 10 * t)
+                eeg += alpha_suppression
+    if np.random.random() < 0.05:
+        artifact_type = np.random.choice(['blink', 'muscle', 'movement'])
+        if artifact_type == 'blink':
+            blink_time = np.random.uniform(0.5, 3.5)
+            blink_duration = 0.2
+            blink_mask = np.exp(-((t - blink_time) / (blink_duration/4))**2)
+            eeg += 60 * blink_mask * np.random.uniform(0.5, 1.5)
+        elif artifact_type == 'muscle':
+            muscle_freq = np.random.uniform(50, 80)
+            muscle_duration = np.random.uniform(0.3, 1.0)
+            muscle_start = np.random.uniform(0, 4 - muscle_duration)
+            muscle_mask = ((t >= muscle_start) & (t <= muscle_start + muscle_duration)).astype(float)
+            eeg += 25 * muscle_mask * np.sin(2 * np.pi * muscle_freq * t) * np.random.uniform(0.5, 1.5)
+    eeg += np.random.normal(0, 3, len(t))
     fft_vals = np.fft.rfft(eeg)
     fft_freqs = np.fft.rfftfreq(len(eeg), 1/fs)
     low_cutoff = 1.0

@@ -56,6 +56,25 @@
   </script>
 </head>
 <body>
+  <!-- Startup/Calibration Overlay -->
+  <div id="startup-overlay" class="startup-overlay">
+    <div class="startup-content">
+      <div class="startup-icon">
+        <i class="fa-solid fa-brain"></i>
+      </div>
+      <h2 id="startup-title">Welcome to NeuroScreen</h2>
+      <p id="startup-message">Please put on your EEG headset and ensure proper contact with your scalp</p>
+      <div id="startup-status" class="startup-status" style="display:none;">
+        <div class="calibration-spinner"></div>
+        <p id="calibration-text">Calibrating sensors...</p>
+      </div>
+      <button id="start-calibration-btn" class="startup-btn">
+        <i class="fa-solid fa-power-off"></i>
+        <span>Start Calibration</span>
+      </button>
+    </div>
+  </div>
+
   <header class="header">
     <div class="header-content">
       <div class="header-left">
@@ -276,6 +295,55 @@
     // Force reload of scripts if needed
     document.querySelectorAll('script[src^="../static/js/"]').forEach(script => {
       script.src += '&t=' + Date.now();
+    });
+    
+    // Startup/Calibration Logic
+    document.addEventListener('DOMContentLoaded', function() {
+      const overlay = document.getElementById('startup-overlay');
+      const startBtn = document.getElementById('start-calibration-btn');
+      const title = document.getElementById('startup-title');
+      const message = document.getElementById('startup-message');
+      const status = document.getElementById('startup-status');
+      const calibrationText = document.getElementById('calibration-text');
+      
+      startBtn.addEventListener('click', function() {
+        // Hide button and instructions
+        startBtn.style.display = 'none';
+        message.style.display = 'none';
+        title.textContent = 'Initializing System';
+        status.style.display = 'block';
+        
+        // Calibration sequence
+        const steps = [
+          { text: 'Detecting headset...', duration: 800 },
+          { text: 'Checking sensor contact...', duration: 1000 },
+          { text: 'Calibrating channels...', duration: 1200 },
+          { text: 'Optimizing signal quality...', duration: 1000 }
+        ];
+        
+        let currentStep = 0;
+        
+        function runStep() {
+          if (currentStep < steps.length) {
+            calibrationText.textContent = steps[currentStep].text;
+            setTimeout(() => {
+              currentStep++;
+              runStep();
+            }, steps[currentStep - 1].duration);
+          } else {
+            // Calibration complete
+            calibrationText.textContent = 'Calibration successful!';
+            setTimeout(() => {
+              overlay.classList.add('fade-out');
+              setTimeout(() => {
+                overlay.style.display = 'none';
+              }, 500);
+            }, 800);
+          }
+        }
+        
+        runStep();
+      });
     });
   </script>
 </body>
