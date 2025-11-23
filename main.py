@@ -122,10 +122,10 @@ def send_telegram_async(message):
 
 def parse_and_format_notification(data_dict: dict) -> str:
     needs = {
-        'first': 'Su ihtiyacı',
-        'second': 'Klima ihtiyacı',
-        'third': 'Tuvalet ihtiyacı',
-        'fifth': 'SOS/Acil yardım'
+        'first': 'Water needed',
+        'second': 'AC needed',
+        'third': 'Restroom needed',
+        'fifth': 'SOS/Emergency'
     }
     if not data_dict:
         return None
@@ -133,7 +133,7 @@ def parse_and_format_notification(data_dict: dict) -> str:
     messages = []
     for key, label in needs.items():
         if str(data_dict.get(key)) == '1':
-            messages.append(f"<b>{label}</b> bildirimi gönderildi.")
+            messages.append(f"<b>{label}</b> notification sent.")
     if messages:
         return '\n'.join(messages)
     return None
@@ -170,7 +170,7 @@ def reset_data():
         update_state(default_data)
         
         # Notifications removed as per user request
-        return jsonify({"status": "success", "message": "Sistem sıfırlandı", "data": default_data})
+        return jsonify({"status": "success", "message": "System reset", "data": default_data})
     except Exception as e:
         import traceback
         traceback.print_exc()
@@ -181,7 +181,7 @@ def push_data():
     try:
         data = request.get_json()
         if not data:
-            return jsonify({"error": "JSON göndərin"}), 400
+            return jsonify({"error": "Send JSON"}), 400
 
         # 1. Send notification IMMEDIATELY (Async) - Prioritize this!
         notif_msg = parse_and_format_notification(data)

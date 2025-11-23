@@ -228,10 +228,10 @@ function fetchNotifications() {
       updateNotificationBadge(notifications.length);
     })
     .catch(err => {
-      console.error('Bildirimler alınamadı:', err);
+      console.error('Failed to fetch notifications:', err);
       if (loadingElement) loadingElement.style.display = 'none';
       if (emptyElement) emptyElement.style.display = 'flex';
-      modernModal.error('Bildirimler yüklenirken ağ hatası oluştu', 'Bağlantı Hatası');
+      modernModal.error('Network error while loading notifications', 'Connection Error');
     });
 }
 
@@ -261,7 +261,7 @@ function createNotificationElement(notification, index) {
   element.classList.add(`notification-${type}`);
   
   // Check if this is a priority notification
-  if (type === 'danger' || message.includes('SOS') || message.includes('Acil')) {
+  if (type === 'danger' || message.includes('SOS') || message.includes('Emergency')) {
     element.classList.add('priority-high');
   }
   
@@ -273,7 +273,7 @@ function createNotificationElement(notification, index) {
       <div>${message}</div>
       <div class="notification-time">${timeAgo}</div>
     </div>
-    <button class="notification-remove" onclick="showRemoveConfirmation(${index})" title="Bu bildirimi kaldır">
+    <button class="notification-remove" onclick="showRemoveConfirmation(${index})" title="Remove this notification">
       <i class="fa-solid fa-times"></i>
     </button>
   `;
@@ -295,11 +295,11 @@ function createNotificationElement(notification, index) {
 function parseNotificationContent(notification) {
   const message = notification.toString().toLowerCase();
   
-  if (message.includes('başarı') || message.includes('tamamlan') || message.includes('check')) {
+  if (message.includes('success') || message.includes('complete') || message.includes('check')) {
     return { type: 'success', icon: 'fa-check-circle', message: notification };
-  } else if (message.includes('sos') || message.includes('acil') || message.includes('yardım')) {
+  } else if (message.includes('sos') || message.includes('emergency') || message.includes('help')) {
     return { type: 'danger', icon: 'fa-triangle-exclamation', message: notification };
-  } else if (message.includes('uyarı') || message.includes('warning') || message.includes('dikkat')) {
+  } else if (message.includes('warning') || message.includes('attention') || message.includes('caution')) {
     return { type: 'warning', icon: 'fa-exclamation-triangle', message: notification };
   } else {
     return { type: 'info', icon: 'fa-info-circle', message: notification };
@@ -308,7 +308,7 @@ function parseNotificationContent(notification) {
 
 // Simple time ago simulation
 function getTimeAgo(index) {
-  const timeOptions = ['Az önce', '1 dakika önce', '2 dakika önce', '5 dakika önce', '10 dakika önce'];
+  const timeOptions = ['Just now', '1 minute ago', '2 minutes ago', '5 minutes ago', '10 minutes ago'];
   return timeOptions[Math.min(index, timeOptions.length - 1)];
 }
 
@@ -334,22 +334,22 @@ function updateNotificationBadge(count) {
 // Clear all notifications with backend integration
 function clearAllNotifications() {
   if (notifications.length === 0) {
-    modernModal.alert('Temizlenecek bildirim bulunmuyor', 'Bilgi');
+    modernModal.alert('No notifications to clear', 'Info');
     return;
   }
   
   modernModal.show({
     type: 'warning',
-    title: 'Tüm Bildirimleri Temizle',
-    message: `Toplam ${notifications.length} bildirimi kalıcı olarak temizlemek istediğinizden emin misiniz? Bu işlem geri alınamaz.`,
+    title: 'Clear All Notifications',
+    message: `Are you sure you want to permanently clear all ${notifications.length} notifications? This action cannot be undone.`,
     buttons: [
       { 
-        text: 'İptal', 
+        text: 'Cancel', 
         type: 'secondary',
         action: () => {} // Just closes the modal
       },
       { 
-        text: 'Tümünü Temizle', 
+        text: 'Clear All', 
         type: 'danger', 
         icon: 'fa-trash',
         action: () => performClearAllNotifications()
@@ -380,14 +380,14 @@ function performClearAllNotifications() {
       if (emptyElement) emptyElement.style.display = 'flex';
       if (clearAllBtn) clearAllBtn.style.display = 'none';
       
-      modernModal.success('Tüm bildirimler başarıyla temizlendi', 'Başarılı');
+      modernModal.success('All notifications cleared successfully', 'Success');
     } else {
-      modernModal.error('Bildirimler temizlenirken hata oluştu: ' + data.message, 'Hata');
+      modernModal.error('Error clearing notifications: ' + data.message, 'Error');
     }
   })
   .catch(err => {
-    console.error('Bildirim temizleme hatası:', err);
-    modernModal.error('Bildirimler temizlenirken ağ hatası oluştu', 'Ağ Hatası');
+    console.error('Notification clearing error:', err);
+    modernModal.error('Network error while clearing notifications', 'Network Error');
   });
 }
 
@@ -424,18 +424,18 @@ function removeNotification(index) {
             if (clearAllBtn) clearAllBtn.style.display = 'none';
           }
           
-          showSuccessNotification('Bildirim başarıyla kaldırıldı');
+          showSuccessNotification('Notification removed successfully');
         }, 400);
       } else {
         // Remove animation class if failed
         notificationElement.classList.remove('removing');
-        modernModal.error('Bildirim kaldırılırken hata oluştu: ' + data.message, 'Hata');
+        modernModal.error('Error removing notification: ' + data.message, 'Error');
       }
     })
     .catch(err => {
-      console.error('Bildirim kaldırma hatası:', err);
+      console.error('Notification removal error:', err);
       notificationElement.classList.remove('removing');
-      modernModal.error('Bildirim kaldırılırken ağ hatası oluştu', 'Ağ Hatası');
+      modernModal.error('Network error while removing notification', 'Network Error');
     });
   }
 }
@@ -450,16 +450,16 @@ function showRemoveConfirmation(index) {
   
   modernModal.show({
     type: 'warning',
-    title: 'Bildirimi Kaldır',
-    message: `"${truncatedMessage}" bildirimini kalıcı olarak kaldırmak istediğinizden emin misiniz?`,
+    title: 'Remove Notification',
+    message: `Are you sure you want to permanently remove notification "${truncatedMessage}"?`,
     buttons: [
       { 
-        text: 'İptal', 
+        text: 'Cancel', 
         type: 'secondary',
         action: () => {} // Just closes the modal
       },
       { 
-        text: 'Kaldır', 
+        text: 'Remove', 
         type: 'danger', 
         icon: 'fa-trash',
         action: () => removeNotification(index)

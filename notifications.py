@@ -46,10 +46,10 @@ def watch_data_file(data_file: str, bot_token: str, chat_id: str):
 def parse_and_format_notification(data: str) -> str:
     import ast
     needs = {
-        'first': 'Su ihtiyacı',
-        'second': 'Klima ihtiyacı',
-        'third': 'Tuvalet ihtiyacı',
-        'fifth': 'SOS/Acil yardım'
+        'first': 'Water needed',
+        'second': 'AC needed',
+        'third': 'Restroom needed',
+        'fifth': 'SOS/Emergency'
     }
     if not data:
         return None
@@ -61,7 +61,7 @@ def parse_and_format_notification(data: str) -> str:
     messages = []
     for key, label in needs.items():
         if str(items.get(key)) == '1':
-            messages.append(f"<b>{label}</b> bildirimi gönderildi.")
+            messages.append(f"<b>{label}</b> notification sent.")
     if messages:
         return '\n'.join(messages)
     return None
@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     # Test sending a message immediately for verification
     print("Testing Telegram notification...")
-    send_telegram_message("Test: NeuroScreen bağlantısı başarılı!", BOT_TOKEN, CHAT_ID)
+    send_telegram_message("Test: NeuroScreen connection successful!", BOT_TOKEN, CHAT_ID)
 
     print(f"Watching {DATA_FILE} for changes...")
     watch_data_file(DATA_FILE, BOT_TOKEN, CHAT_ID)

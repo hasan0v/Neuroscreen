@@ -211,23 +211,8 @@ class UniversalModal {
     });
   }
 
-  // Custom confirmation with Turkish text
-  confirmTurkish(message, title = 'Onay') {
-    return new Promise((resolve) => {
-      this.show({
-        type: 'question',
-        title,
-        message,
-        buttons: [
-          { text: 'İptal', type: 'secondary', action: () => resolve(false) },
-          { text: 'Tamam', type: 'primary', action: () => resolve(true) }
-        ]
-      });
-    });
-  }
-
   // Show loading modal
-  loading(message = 'Yükleniyor...', title = 'İşlem Devam Ediyor') {
+  loading(message = 'Loading...', title = 'Processing') {
     const modal = this.show({
       type: 'info',
       title,
@@ -275,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
   
   window.confirm = function(message) {
-    return globalModal.confirmTurkish(message);
+    return globalModal.confirm(message);
   };
   
   // Make modal available globally

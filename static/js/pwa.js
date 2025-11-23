@@ -66,17 +66,17 @@ class NeuroScreenPWA {
             <i class="fa-solid fa-download"></i>
           </div>
           <div class="install-text">
-            <h4>NeuroScreen'i Yükle</h4>
-            <p>Daha iyi deneyim için uygulamayı telefonunuza yükleyin</p>
+            <h4>Install NeuroScreen</h4>
+            <p>Install the app on your phone for a better experience</p>
           </div>
           <div class="install-actions">
             <button id="pwa-install-btn" class="install-btn primary">
               <i class="fa-solid fa-plus"></i>
-              Yükle
+              Install
             </button>
             <button id="pwa-dismiss-btn" class="install-btn secondary">
               <i class="fa-solid fa-times"></i>
-              Kapat
+              Close
             </button>
           </div>
         </div>
@@ -129,7 +129,7 @@ class NeuroScreenPWA {
   }
 
   showInstallSuccessMessage() {
-    this.showNotification('✅ NeuroScreen başarıyla yüklendi!', 'success');
+    this.showNotification('✅ NeuroScreen installed successfully!', 'success');
   }
 
   showUpdateNotification() {
@@ -137,8 +137,8 @@ class NeuroScreenPWA {
       <div id="pwa-update-banner" class="pwa-update-banner">
         <div class="update-content">
           <i class="fa-solid fa-sync-alt"></i>
-          <span>Yeni güncelleme mevcut</span>
-          <button id="pwa-update-btn" class="update-btn">Güncelle</button>
+          <span>New update available</span>
+          <button id="pwa-update-btn" class="update-btn">Update</button>
         </div>
       </div>
     `;
@@ -159,11 +159,11 @@ class NeuroScreenPWA {
 
   handleNetworkStatus() {
     window.addEventListener('online', () => {
-      this.showNotification('🌐 İnternet bağlantısı geri döndü', 'success');
+      this.showNotification('🌐 Internet connection restored', 'success');
     });
 
     window.addEventListener('offline', () => {
-      this.showNotification('📱 Çevrimdışı modda çalışıyor', 'info');
+      this.showNotification('📱 Running in offline mode', 'info');
     });
   }
 

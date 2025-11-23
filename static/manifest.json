@@ -1,7 +1,7 @@
 {
-  "name": "NeuroScreen - EEG İzleme Sistemi",
+  "name": "NeuroScreen - EEG Monitoring System",
   "short_name": "NeuroScreen",
-  "description": "Beyninizin gücünü keşfedin - EEG İzleme ve Odaklanma Terapisi",
+  "description": "Discover the power of your brain - EEG Monitoring and Focus Therapy",
   "start_url": "/",
   "display": "standalone",
   "display_override": ["standalone", "fullscreen"],
@@ -9,7 +9,7 @@
   "theme_color": "#2563eb",
   "orientation": "portrait-primary",
   "scope": "/",
-  "lang": "tr",
+  "lang": "en",
   "categories": ["health", "medical", "productivity"],
   "icons": [
     {
@@ -67,21 +67,21 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "EEG İzleme Dashboard"
+      "label": "EEG Monitoring Dashboard"
     },
     {
       "src": "/static/screenshots/mobile-screenshot.png",
       "sizes": "375x667",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Mobil Odaklanma Terapisi"
+      "label": "Mobile Focus Therapy"
     }
   ],
   "shortcuts": [
     {
-      "name": "EEG İzleme",
+      "name": "EEG Monitoring",
       "short_name": "EEG",
-      "description": "Beyin dalgası spektrumu izleme",
+      "description": "Brainwave spectrum monitoring",
       "url": "/",
       "icons": [
         {
@@ -91,9 +91,9 @@
       ]
     },
     {
-      "name": "Odaklanma Terapisi",
-      "short_name": "Odaklanma",
-      "description": "Sağlık odaklanma egzersizleri",
+      "name": "Focus Therapy",
+      "short_name": "Focus",
+      "description": "Health focus exercises",
       "url": "/focus",
       "icons": [
         {

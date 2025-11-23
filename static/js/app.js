@@ -7,10 +7,10 @@ let lastInteractionTime = Date.now();
 
 // Health categories mapping for better user feedback
 const healthCategories = {
-  'first': { name: 'Su', icon: 'fa-glass-water', message: 'Su içme zamanı etkinleştirildi!' },
-  'second': { name: 'Klima', icon: 'fa-snowflake', message: 'Klima ayarlaması etkinleştirildi!' },
-  'third': { name: 'Tuvalet', icon: 'fa-toilet', message: 'Tuvalet ihtiyacı kaydedildi!' },
-  'fifth': { name: 'SOS', icon: 'fa-triangle-exclamation', message: 'Acil yardım sinyali gönderildi!' }
+  'first': { name: 'Water', icon: 'fa-glass-water', message: 'Water drinking time activated!' },
+  'second': { name: 'AC', icon: 'fa-snowflake', message: 'AC adjustment activated!' },
+  'third': { name: 'Toilet', icon: 'fa-toilet', message: 'Toilet need recorded!' },
+  'fifth': { name: 'SOS', icon: 'fa-triangle-exclamation', message: 'Emergency help signal sent!' }
 };
 
 // Function to normalize/reset data
@@ -31,10 +31,10 @@ function normalizeData() {
   })
   .then(response => response.json())
   .then(result => {
-    console.log('Veri normalleştirildi (sıfırlandı):', result);
+    console.log('Data normalized (reset):', result);
   })
   .catch(err => {
-    console.error('Normalizasyon hatası:', err);
+    console.error('Normalization error:', err);
   });
 }
 
@@ -175,13 +175,13 @@ cells.forEach((cell, index) => {
       })
       .then(response => response.json())
       .then(result => {
-        console.log('Sağlık kategorisi etkinleştirildi:', result);
+        console.log('Health category activated:', result);
         showSuccessFeedback(cell, category);
         // Reset inactivity timer after successful activation
         resetInactivityTimer();
       })
       .catch(err => {
-        console.error('Hata oluştu:', err);
+        console.error('Error occurred:', err);
         showErrorFeedback(cell);
       });
 
@@ -278,7 +278,7 @@ function showSuccessFeedback(cell, category) {
 // Error feedback system
 function showErrorFeedback(cell) {
   if (typeof showErrorNotification === 'function') {
-    showErrorNotification('Bağlantı hatası oluştu. Tekrar deneyin.');
+    showErrorNotification('Connection error occurred. Please try again.');
   } else {
     // Fallback notification
     const notification = document.createElement('div');
@@ -301,7 +301,7 @@ function showErrorFeedback(cell) {
     
     notification.innerHTML = `
       <i class="fa-solid fa-exclamation-triangle"></i>
-      <span>Bağlantı hatası oluştu. Tekrar deneyin.</span>
+      <span>Connection error occurred. Please try again.</span>
     `;
     
     document.body.appendChild(notification);
@@ -401,7 +401,7 @@ class EEGChartManager {
       data: {
         labels: [],
         datasets: [{
-          label: 'EEG Sinyali',
+          label: 'EEG Signal',
           data: [],
           borderColor: '#2563eb',
           borderWidth: 2,
@@ -416,15 +416,15 @@ class EEGChartManager {
         animation: false,
         plugins: {
           legend: { display: false },
-          title: { display: true, text: 'EEG Zaman Sinyali (Son 2 saniye)', font: { size: 16 } }
+          title: { display: true, text: 'EEG Time Signal (Last 2 seconds)', font: { size: 16 } }
         },
         scales: {
           x: { 
             display: true, 
-            title: { display: true, text: 'Zaman (s)' },
+            title: { display: true, text: 'Time (s)' },
             ticks: { maxTicksLimit: 10 }
           },
-          y: { min: -100, max: 100, title: { display: true, text: 'Amplitüd (μV)' } }
+          y: { min: -100, max: 100, title: { display: true, text: 'Amplitude (μV)' } }
         }
       }
     });
@@ -437,7 +437,7 @@ class EEGChartManager {
         labels: [],
         datasets: [
           {
-            label: 'Güç Spektrumu',
+            label: 'Power Spectrum',
             data: [],
             borderColor: '#10b981',
             backgroundColor: 'rgba(16, 185, 129, 0.2)',
@@ -447,7 +447,7 @@ class EEGChartManager {
             tension: 0.4
           },
           {
-            label: 'Odaklanma',
+            label: 'Focus',
             data: [],
             borderColor: '#ef4444', // Red
             backgroundColor: 'rgba(239, 68, 68, 0.5)',
@@ -464,11 +464,11 @@ class EEGChartManager {
         animation: false,
         plugins: {
           legend: { display: false },
-          title: { display: true, text: 'EEG Güç Spektrumu', font: { size: 16 } }
+          title: { display: true, text: 'EEG Power Spectrum', font: { size: 16 } }
         },
         scales: {
-          x: { min: 0, max: 50, title: { display: true, text: 'Frekans (Hz)' } },
-          y: { beginAtZero: true, title: { display: true, text: 'Güç (μV²/Hz)' } }
+          x: { min: 0, max: 50, title: { display: true, text: 'Frequency (Hz)' } },
+          y: { beginAtZero: true, title: { display: true, text: 'Power (μV²/Hz)' } }
         }
       }
     });
@@ -502,11 +502,11 @@ class EEGChartManager {
     
     // Update Title with Active State
     if (data.active_state) {
-        this.timeChart.options.plugins.title.text = `EEG Zaman Sinyali - AKTİF: ${data.active_state}`;
+        this.timeChart.options.plugins.title.text = `EEG Time Signal - ACTIVE: ${data.active_state}`;
         this.timeChart.options.plugins.title.color = '#ef4444';
         this.timeChart.options.plugins.title.font = { size: 18, weight: 'bold' };
     } else {
-        this.timeChart.options.plugins.title.text = 'EEG Zaman Sinyali (Son 2 saniye)';
+        this.timeChart.options.plugins.title.text = 'EEG Time Signal (Last 2 seconds)';
         this.timeChart.options.plugins.title.color = '#666';
         this.timeChart.options.plugins.title.font = { size: 16, weight: 'normal' };
     }
@@ -529,10 +529,10 @@ class EEGChartManager {
         });
         
         // Also update Freq Chart Title
-        this.freqChart.options.plugins.title.text = `EEG Güç Spektrumu - HEDEF: ${data.highlight.freq} Hz`;
+        this.freqChart.options.plugins.title.text = `EEG Power Spectrum - TARGET: ${data.highlight.freq} Hz`;
         this.freqChart.options.plugins.title.color = '#ef4444';
     } else {
-        this.freqChart.options.plugins.title.text = 'EEG Güç Spektrumu';
+        this.freqChart.options.plugins.title.text = 'EEG Power Spectrum';
         this.freqChart.options.plugins.title.color = '#666';
     }
     this.freqChart.data.datasets[1].data = highlightData;
