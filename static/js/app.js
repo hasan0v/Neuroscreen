@@ -403,7 +403,7 @@ class EEGChartManager {
         datasets: [{
           label: 'EEG Signal',
           data: [],
-          borderColor: '#2563eb',
+          borderColor: '#0071e3', // Apple Blue
           borderWidth: 2,
           pointRadius: 0,
           tension: 0.4,
@@ -416,15 +416,28 @@ class EEGChartManager {
         animation: false,
         plugins: {
           legend: { display: false },
-          title: { display: true, text: 'EEG Time Signal (Last 2 seconds)', font: { size: 16 } }
+          title: { 
+            display: true, 
+            text: 'EEG Time Signal (Last 2 seconds)', 
+            font: { family: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', size: 14, weight: '600' },
+            color: '#1d1d1f',
+            padding: { bottom: 20 }
+          }
         },
         scales: {
           x: { 
             display: true, 
-            title: { display: true, text: 'Time (s)' },
-            ticks: { maxTicksLimit: 10 }
+            title: { display: true, text: 'Time (s)', color: '#86868b' },
+            ticks: { maxTicksLimit: 10, color: '#86868b' },
+            grid: { color: 'rgba(0,0,0,0.03)' }
           },
-          y: { min: -100, max: 100, title: { display: true, text: 'Amplitude (μV)' } }
+          y: { 
+            min: -100, 
+            max: 100, 
+            title: { display: true, text: 'Amplitude (μV)', color: '#86868b' },
+            ticks: { color: '#86868b' },
+            grid: { color: 'rgba(0,0,0,0.03)' }
+          }
         }
       }
     });
@@ -439,8 +452,8 @@ class EEGChartManager {
           {
             label: 'Power Spectrum',
             data: [],
-            borderColor: '#10b981',
-            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+            borderColor: '#34c759', // Apple Green
+            backgroundColor: 'rgba(52, 199, 89, 0.1)',
             borderWidth: 2,
             pointRadius: 0,
             fill: true,
@@ -449,8 +462,8 @@ class EEGChartManager {
           {
             label: 'Focus',
             data: [],
-            borderColor: '#ef4444', // Red
-            backgroundColor: 'rgba(239, 68, 68, 0.5)',
+            borderColor: '#ff3b30', // Apple Red
+            backgroundColor: 'rgba(255, 59, 48, 0.2)',
             borderWidth: 2,
             pointRadius: 0,
             fill: true,
@@ -464,11 +477,28 @@ class EEGChartManager {
         animation: false,
         plugins: {
           legend: { display: false },
-          title: { display: true, text: 'EEG Power Spectrum', font: { size: 16 } }
+          title: { 
+            display: true, 
+            text: 'EEG Power Spectrum', 
+            font: { family: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', size: 14, weight: '600' },
+            color: '#1d1d1f',
+            padding: { bottom: 20 }
+          }
         },
         scales: {
-          x: { min: 0, max: 50, title: { display: true, text: 'Frequency (Hz)' } },
-          y: { beginAtZero: true, title: { display: true, text: 'Power (μV²/Hz)' } }
+          x: { 
+            min: 0, 
+            max: 50, 
+            title: { display: true, text: 'Frequency (Hz)', color: '#86868b' },
+            ticks: { color: '#86868b' },
+            grid: { color: 'rgba(0,0,0,0.03)' }
+          },
+          y: { 
+            beginAtZero: true, 
+            title: { display: true, text: 'Power (μV²/Hz)', color: '#86868b' },
+            ticks: { color: '#86868b' },
+            grid: { color: 'rgba(0,0,0,0.03)' }
+          }
         }
       }
     });
