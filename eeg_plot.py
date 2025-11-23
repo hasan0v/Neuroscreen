@@ -1,21 +1,14 @@
 import numpy as np
-from flask import Flask, Response
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import io
-import ast
 import time
 
-
 # Helper function to generate EEG and FFT data
-def simulate_eeg_and_fft():
+def simulate_eeg_and_fft(data=None):
     fs = 256
     mapping = {
-        "first": {"freq": 10, "name": "Alpha (Relaxed Focus)", "base_amp": 25, "focus_amp": 45},
-        "second": {"freq": 18, "name": "SMR (Sensory Motor)", "base_amp": 15, "focus_amp": 35},
-        "third": {"freq": 24, "name": "Beta (Active Focus)", "base_amp": 12, "focus_amp": 30},
-        "fifth": {"freq": 30, "name": "High Beta (Alert)", "base_amp": 8, "focus_amp": 40}
+        "first": {"freq": 10, "name": "Alpha (Relaxed Focus)", "base_amp": 25, "focus_amp": 120},
+        "second": {"freq": 18, "name": "SMR (Sensory Motor)", "base_amp": 15, "focus_amp": 90},
+        "third": {"freq": 24, "name": "Beta (Active Focus)", "base_amp": 12, "focus_amp": 80},
+        "fifth": {"freq": 30, "name": "High Beta (Alert)", "base_amp": 8, "focus_amp": 80}
     }
     background_frequencies = {
         "delta": {"freq": 2, "amp": 35},
@@ -26,12 +19,10 @@ def simulate_eeg_and_fft():
     }
     transition_duration = 3.0
     t = np.arange(0, 4, 1/fs)
-    try:
-        with open("data.txt", "r") as f:
-            txt = f.read().strip()
-            data = ast.literal_eval(txt)
-    except Exception:
+    
+    if data is None:
         data = {"first": 0, "second": 0, "third": 0, "fifth": 0}
+
     eeg = np.zeros_like(t)
     for bg_name, bg_info in background_frequencies.items():
         freq_variation = np.random.uniform(-0.5, 0.5)
@@ -88,91 +79,26 @@ def simulate_eeg_and_fft():
             smoothed[i] = np.mean(spectrum[i-window_size:i+window_size+1])
         return smoothed
     power_spectrum_smooth = smooth_spectrum(power_spectrum)
+    
+    # Return data for JSON serialization
+    # We only need the last 2 seconds for the time graph (approx 512 points)
+    # And the frequency spectrum
+    
+    time_window_indices = slice(-int(2*fs), None)
+    
+    # Identify active state info for highlighting
+    active_key = next((k for k, v in data.items() if v == 1), None)
+    highlight_info = None
+    if active_key:
+        info = mapping[active_key]
+        highlight_info = {"freq": info["freq"], "name": info["name"]}
+
     return {
-        "t": t,
-        "eeg": eeg,
-        "fft_freqs": fft_freqs,
-        "power_spectrum_smooth": power_spectrum_smooth,
-        "freq_mask": freq_mask,
-        "mapping": mapping,
-        "data": data,
-        "current_time": current_time
+        "time_labels": t[time_window_indices].tolist(),
+        "eeg_values": eeg[time_window_indices].tolist(),
+        "freq_labels": fft_freqs[freq_mask].tolist(),
+        "power_values": power_spectrum_smooth[freq_mask].tolist(),
+        "active_state": highlight_info["name"] if highlight_info else None,
+        "highlight": highlight_info
     }
-
-# Function to generate time-domain EEG image
-def generate_eeg_time_image():
-    result = simulate_eeg_and_fft()
-    t = result["t"]
-    eeg = result["eeg"]
-    mapping = result["mapping"]
-    data = result["data"]
-    current_time = result["current_time"]
-    fs = 256
-    fig, ax1 = plt.subplots(figsize=(18, 6))
-    time_window = t[-int(2*fs):]
-    eeg_window = eeg[-int(2*fs):]
-    ax1.plot(time_window, eeg_window, color='#2563eb', linewidth=2.5, alpha=0.9)
-    ax1.set_title('EEG Zaman Siqnalı (Son 2 saniyə)', fontsize=18, fontweight='bold')
-    ax1.set_xlabel('Vaxt (saniyə)', fontsize=14)
-    ax1.set_ylabel('Amplitud (μV)', fontsize=14)
-    ax1.set_ylim(-100, 100)
-    ax1.grid(True, alpha=0.3, linewidth=1.2)
-    ax1.set_facecolor('#f8fafc')
-    ax1.tick_params(labelsize=12)
-    active_states = [key for key, val in data.items() if val == 1]
-    if active_states:
-        state_name = mapping[active_states[0]]["name"]
-        ax1.text(0.02, 0.95, f'Aktiv Hal: {state_name}', transform=ax1.transAxes,
-                bbox=dict(boxstyle="round,pad=0.5", facecolor='lightgreen', alpha=0.8),
-                fontsize=14, fontweight='bold')
-    plt.tight_layout(pad=2.0)
-    img_bytes = io.BytesIO()
-    fig.savefig(img_bytes, format='png', dpi=120, bbox_inches='tight',
-               facecolor='white', edgecolor='none')
-    plt.close(fig)
-    img_bytes.seek(0)
-    return img_bytes.read()
-
-# Function to generate frequency-domain EEG image
-def generate_eeg_freq_image():
-    result = simulate_eeg_and_fft()
-    fft_freqs = result["fft_freqs"]
-    power_spectrum_smooth = result["power_spectrum_smooth"]
-    freq_mask = result["freq_mask"]
-    mapping = result["mapping"]
-    data = result["data"]
-    current_time = result["current_time"]
-    fig, ax2 = plt.subplots(figsize=(18, 6))
-    ax2.plot(fft_freqs[freq_mask], power_spectrum_smooth[freq_mask],
-            color='#10b981', linewidth=3, alpha=0.9)
-    ax2.fill_between(fft_freqs[freq_mask], power_spectrum_smooth[freq_mask],
-                    alpha=0.4, color='#10b981')
-    for key, button_info in mapping.items():
-        if data.get(key, 0) == 1:
-            freq = button_info["freq"]
-            freq_range = (fft_freqs >= freq-2) & (fft_freqs <= freq+2)
-            ax2.fill_between(fft_freqs[freq_range], power_spectrum_smooth[freq_range],
-                           alpha=0.7, color='red', label=f'{button_info["name"]}', linewidth=2)
-    ax2.set_title('EEG Güc Spektrumu', fontsize=18, fontweight='bold')
-    ax2.set_xlabel('Tezlik (Hz)', fontsize=14)
-    ax2.set_ylabel('Güc (μV²/Hz)', fontsize=14)
-    ax2.set_xlim(1, 50)
-    ax2.set_ylim(0, np.max(power_spectrum_smooth[freq_mask]) * 1.1)
-    ax2.grid(True, alpha=0.3, linewidth=1.2)
-    ax2.set_facecolor('#f8fafc')
-    ax2.tick_params(labelsize=12)
-    band_labels = [
-        (2, "δ"), (6, "θ"), (10, "α"), (20, "β"), (35, "γ")
-    ]
-    for freq, label in band_labels:
-        ax2.axvline(x=freq, color='gray', linestyle='--', alpha=0.6, linewidth=1.5)
-        ax2.text(freq, ax2.get_ylim()[1]*0.9, label, ha='center',
-                fontsize=16, fontweight='bold', color='gray')
-    plt.tight_layout(pad=2.0)
-    img_bytes = io.BytesIO()
-    fig.savefig(img_bytes, format='png', dpi=120, bbox_inches='tight',
-               facecolor='white', edgecolor='none')
-    plt.close(fig)
-    img_bytes.seek(0)
-    return img_bytes.read()
 

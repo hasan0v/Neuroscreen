@@ -21,7 +21,8 @@ EnvironmentFile=-/var/www/neuroscreen/.env
 ExecStart=/var/www/neuroscreen/venv/bin/gunicorn \
     --bind 127.0.0.1:5000 \
     --workers 2 \
-    --worker-class sync \
+    --worker-class gthread \
+    --threads 4 \
     --timeout 120 \
     --access-logfile /var/log/neuroscreen/access.log \
     --error-logfile /var/log/neuroscreen/error.log \

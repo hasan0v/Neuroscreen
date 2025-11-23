@@ -372,150 +372,177 @@ window.addEventListener('beforeunload', () => {
   }
 });
 
-// EEG Graph Auto-Refresh System
-class EEGGraphManager {
+// EEG Chart Manager using Chart.js
+class EEGChartManager {
   constructor() {
-    this.refreshInterval = 1000; // Refresh every 1 second for real-time feel
+    this.timeChart = null;
+    this.freqChart = null;
+    this.refreshInterval = 1000; // 1 second
     this.isRefreshing = false;
     this.refreshTimer = null;
-    this.initializeGraphs();
+    this.initCharts();
   }
 
-  initializeGraphs() {
-    const eegDisplays = document.querySelectorAll('.eeg-display img');
+  initCharts() {
+    // Check if canvas elements exist
+    const timeCanvas = document.getElementById('eegTimeChart');
+    const freqCanvas = document.getElementById('eegFreqChart');
     
-    console.log(`Found ${eegDisplays.length} EEG display elements`);
-    
-    if (eegDisplays.length === 0) {
-      console.warn('EEG display elements not found - retrying in 1 second');
-      setTimeout(() => this.initializeGraphs(), 1000);
+    if (!timeCanvas || !freqCanvas) {
+      console.warn('EEG Chart canvases not found, retrying...');
+      setTimeout(() => this.initCharts(), 1000);
       return;
     }
 
-    // Add loading states and better event handling
-    eegDisplays.forEach((img, index) => {
-      img.style.transition = 'opacity 0.3s ease';
-      img.style.opacity = '1'; // Start with full opacity
-      
-      // Remove any existing event listeners
-      img.onload = null;
-      img.onerror = null;
-      
-      // Track error count to prevent excessive error handling
-      img.errorCount = 0;
-      
-      img.addEventListener('load', () => {
-        img.style.opacity = '1';
-        img.errorCount = 0; // Reset error count on successful load
-        console.log(`EEG graph ${index + 1} loaded successfully`);
-      });
-      
-      img.addEventListener('error', (e) => {
-        img.errorCount = (img.errorCount || 0) + 1;
-        console.error(`Failed to load EEG graph ${index + 1} (error count: ${img.errorCount}):`, e);
-        
-        // Only show error after multiple failures
-        if (img.errorCount >= 3) {
-          this.handleGraphError(img, index);
-        } else {
-          // Try to reload with a different timestamp
-          setTimeout(() => {
-            const baseUrl = index === 0 ? '/eeg_stream1' : '/eeg_stream2';
-            const retryTimestamp = Date.now();
-            img.src = `${baseUrl}?retry=${retryTimestamp}&attempt=${img.errorCount}`;
-            console.log(`Retrying EEG graph ${index + 1}, attempt ${img.errorCount}`);
-          }, 1000 * img.errorCount); // Increasing delay for retries
+    // Initialize Time Domain Chart
+    const timeCtx = timeCanvas.getContext('2d');
+    this.timeChart = new Chart(timeCtx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'EEG Sinyali',
+          data: [],
+          borderColor: '#2563eb',
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.4,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: { display: false },
+          title: { display: true, text: 'EEG Zaman Sinyali (Son 2 saniye)', font: { size: 16 } }
+        },
+        scales: {
+          x: { 
+            display: true, 
+            title: { display: true, text: 'Zaman (s)' },
+            ticks: { maxTicksLimit: 10 }
+          },
+          y: { min: -100, max: 100, title: { display: true, text: 'Amplitüd (μV)' } }
         }
-      });
-      
-      // Log current src for debugging
-      console.log(`EEG graph ${index + 1} initial src:`, img.src);
+      }
+    });
+
+    // Initialize Frequency Domain Chart
+    const freqCtx = freqCanvas.getContext('2d');
+    this.freqChart = new Chart(freqCtx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: 'Güç Spektrumu',
+            data: [],
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: true,
+            tension: 0.4
+          },
+          {
+            label: 'Odaklanma',
+            data: [],
+            borderColor: '#ef4444', // Red
+            backgroundColor: 'rgba(239, 68, 68, 0.5)',
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: true,
+            tension: 0.4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: { display: false },
+          title: { display: true, text: 'EEG Güç Spektrumu', font: { size: 16 } }
+        },
+        scales: {
+          x: { min: 0, max: 50, title: { display: true, text: 'Frekans (Hz)' } },
+          y: { beginAtZero: true, title: { display: true, text: 'Güç (μV²/Hz)' } }
+        }
+      }
     });
 
     this.startAutoRefresh();
-    console.log('EEG Graph Manager initialized - graphs will refresh every', this.refreshInterval, 'ms');
+    console.log('EEG Chart Manager initialized');
   }
 
-  refreshGraphs() {
-    if (this.isRefreshing) {
-      console.log('Refresh already in progress, skipping...');
-      return;
+  async fetchData() {
+    if (this.isRefreshing) return;
+    this.isRefreshing = true;
+    
+    try {
+      const response = await fetch('/eeg_data');
+      const data = await response.json();
+      
+      this.updateCharts(data);
+    } catch (error) {
+      console.error('Error fetching EEG data:', error);
+    } finally {
+      this.isRefreshing = false;
+    }
+  }
+
+  updateCharts(data) {
+    if (!data || !this.timeChart || !this.freqChart) return;
+
+    // Update Time Chart
+    this.timeChart.data.labels = data.time_labels.map(t => t.toFixed(2));
+    this.timeChart.data.datasets[0].data = data.eeg_values;
+    
+    // Update Title with Active State
+    if (data.active_state) {
+        this.timeChart.options.plugins.title.text = `EEG Zaman Sinyali - AKTİF: ${data.active_state}`;
+        this.timeChart.options.plugins.title.color = '#ef4444';
+        this.timeChart.options.plugins.title.font = { size: 18, weight: 'bold' };
+    } else {
+        this.timeChart.options.plugins.title.text = 'EEG Zaman Sinyali (Son 2 saniye)';
+        this.timeChart.options.plugins.title.color = '#666';
+        this.timeChart.options.plugins.title.font = { size: 16, weight: 'normal' };
     }
     
-    this.isRefreshing = true;
-    const timestamp = Date.now();
-    const randomSeed = Math.random().toString(36).substring(7);
-    const eegDisplays = document.querySelectorAll('.eeg-display img');
-    
-    console.log(`Refreshing EEG graphs at ${new Date().toLocaleTimeString()} with timestamp: ${timestamp}`);
-    
-    eegDisplays.forEach((img, index) => {
-      // Skip refresh if image is currently in error state
-      if (img.errorCount >= 3) {
-        console.log(`Skipping refresh for EEG graph ${index + 1} due to repeated errors`);
-        return;
-      }
-      
-      // Gentle loading effect
-      img.style.opacity = '0.9';
-      
-      // Use simpler cache busting - the complex method might be causing issues
-      const baseUrl = index === 0 ? '/eeg_stream1' : '/eeg_stream2';
-      const newSrc = `${baseUrl}?t=${timestamp}`;
-      
-      // Direct update without clearing src first
-      img.src = newSrc;
-      console.log(`Updated EEG graph ${index + 1}: ${newSrc}`);
-    });
+    this.timeChart.update('none'); // 'none' mode for performance
 
-    // Reset refresh flag after a reasonable delay
-    setTimeout(() => {
-      this.isRefreshing = false;
-    }, 500);
-  }
+    // Update Freq Chart
+    this.freqChart.data.labels = data.freq_labels.map(f => f.toFixed(1));
+    this.freqChart.data.datasets[0].data = data.power_values;
 
-  handleGraphError(img, index) {
-    console.error(`Creating error placeholder for EEG graph ${index + 1}`);
-    
-    // Create error placeholder
-    const canvas = document.createElement('canvas');
-    canvas.width = 800;
-    canvas.height = 300;
-    const ctx = canvas.getContext('2d');
-    
-    // Draw error state
-    ctx.fillStyle = '#f3f4f6';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#6b7280';
-    ctx.font = '16px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('EEG bağlantı sorunu', canvas.width/2, canvas.height/2 - 20);
-    ctx.fillText('Sayfa yenilenerek çözülebilir', canvas.width/2, canvas.height/2);
-    ctx.fillText('Veya F12 > Console > refreshEEGGraphs()', canvas.width/2, canvas.height/2 + 20);
-    
-    img.src = canvas.toDataURL();
-  }
+    // Update Highlight Dataset (Red part)
+    const highlightData = new Array(data.power_values.length).fill(null);
+    if (data.highlight) {
+        const centerFreq = data.highlight.freq;
+        data.freq_labels.forEach((freq, index) => {
+            // Highlight range: center +/- 2Hz
+            if (freq >= centerFreq - 2 && freq <= centerFreq + 2) {
+                highlightData[index] = data.power_values[index];
+            }
+        });
+        
+        // Also update Freq Chart Title
+        this.freqChart.options.plugins.title.text = `EEG Güç Spektrumu - HEDEF: ${data.highlight.freq} Hz`;
+        this.freqChart.options.plugins.title.color = '#ef4444';
+    } else {
+        this.freqChart.options.plugins.title.text = 'EEG Güç Spektrumu';
+        this.freqChart.options.plugins.title.color = '#666';
+    }
+    this.freqChart.data.datasets[1].data = highlightData;
 
-  // Method to reset error states and force fresh reload
-  resetErrors() {
-    const eegDisplays = document.querySelectorAll('.eeg-display img');
-    eegDisplays.forEach((img, index) => {
-      img.errorCount = 0;
-      img.style.opacity = '1';
-      const baseUrl = index === 0 ? '/eeg_stream1' : '/eeg_stream2';
-      img.src = `${baseUrl}?reset=${Date.now()}`;
-      console.log(`Reset EEG graph ${index + 1} error state`);
-    });
+    this.freqChart.update('none');
   }
 
   startAutoRefresh() {
-    if (this.refreshTimer) {
-      clearInterval(this.refreshTimer);
-    }
-    
-    this.refreshTimer = setInterval(() => {
-      this.refreshGraphs();
-    }, this.refreshInterval);
+    if (this.refreshTimer) clearInterval(this.refreshTimer);
+    this.refreshTimer = setInterval(() => this.fetchData(), this.refreshInterval);
   }
 
   stopAutoRefresh() {
@@ -524,64 +551,21 @@ class EEGGraphManager {
       this.refreshTimer = null;
     }
   }
-
-  // Method to adjust refresh rate (can be called from external controls)
-  setRefreshRate(intervalMs) {
-    this.refreshInterval = Math.max(500, intervalMs); // Minimum 500ms
-    this.stopAutoRefresh();
-    this.startAutoRefresh();
-    console.log('EEG refresh rate updated to', this.refreshInterval, 'ms');
-  }
 }
 
-// Initialize EEG Graph Manager when DOM is ready
+// Initialize EEG Chart Manager when DOM is ready
 let eegManager = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM Content Loaded - Initializing EEG Manager');
-  eegManager = new EEGGraphManager();
-  
-  // Add global function for manual refresh (debugging)
-  window.refreshEEGGraphs = () => {
-    if (eegManager) {
-      console.log('Manual EEG refresh triggered');
-      eegManager.refreshGraphs();
-    } else {
-      console.error('EEG Manager not initialized');
-    }
-  };
-  
-  // Add global function to reset errors
-  window.resetEEGErrors = () => {
-    if (eegManager) {
-      console.log('Resetting EEG errors');
-      eegManager.resetErrors();
-    } else {
-      console.error('EEG Manager not initialized');
-    }
-  };
-  
-  // Add global function to check status
-  window.checkEEGStatus = () => {
-    if (eegManager) {
-      const displays = document.querySelectorAll('.eeg-display img');
-      console.log('EEG Status:', {
-        managerExists: !!eegManager,
-        refreshInterval: eegManager.refreshInterval,
-        isRefreshing: eegManager.isRefreshing,
-        displayCount: displays.length,
-        errorCounts: Array.from(displays).map(img => img.errorCount || 0),
-        displaySources: Array.from(displays).map(img => img.src.substring(0, 50) + '...')
-      });
-    }
-  };
+  eegManager = new EEGChartManager();
 });
 
 // Also try to initialize after window load as fallback
 window.addEventListener('load', () => {
   if (!eegManager) {
     console.log('Window loaded - Fallback EEG Manager initialization');
-    eegManager = new EEGGraphManager();
+    eegManager = new EEGChartManager();
   }
 });
 

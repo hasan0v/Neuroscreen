@@ -31,6 +31,7 @@
   <title>NeuroScreen - EEG İzleme Sistemi</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="../static/css/style.css?v=1.3&t=" id="main-css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     /* Fallback styles to ensure consistent header layout */
     .header-right {
@@ -43,6 +44,10 @@
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
+    }
+    .eeg-display canvas {
+      width: 100% !important;
+      height: 100% !important;
     }
   </style>
   <script>
@@ -152,8 +157,12 @@
             </div>
           </div>
           <div class="eeg-displays">
-            <div class="eeg-display"><img src="/eeg_stream1" alt="EEG Grafiği"></div>
-            <div class="eeg-display"><img src="/eeg_stream2" alt="EEG Grafiği"></div>
+            <div class="eeg-display">
+              <canvas id="eegTimeChart"></canvas>
+            </div>
+            <div class="eeg-display">
+              <canvas id="eegFreqChart"></canvas>
+            </div>
           </div>
         </div>
       </div>

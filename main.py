@@ -1,3 +1,49 @@
+import os
+import requests
+import ast
+import sqlite3
+import json
+import threading
+from flask import Flask, send_file, render_template_string, render_template, request, jsonify, Response
+from eeg_plot import simulate_eeg_and_fft
+
+app = Flask(__name__)
+
+# --- Database Setup ---
+DB_FILE = 'neuroscreen.db'
+
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS state
+                 (id INTEGER PRIMARY KEY, data TEXT)''')
+    c.execute('SELECT count(*) FROM state')
+    if c.fetchone()[0] == 0:
+        default_data = json.dumps({"first": 0, "second": 0, "third": 0, "fifth": 0})
+        c.execute('INSERT INTO state (id, data) VALUES (1, ?)', (default_data,))
+        conn.commit()
+    conn.close()
+
+def get_state():
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute('SELECT data FROM state WHERE id=1')
+    row = c.fetchone()
+    conn.close()
+    if row:
+        return json.loads(row[0])
+    return {"first": 0, "second": 0, "third": 0, "fifth": 0}
+
+def update_state(new_data):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute('UPDATE state SET data=? WHERE id=1', (json.dumps(new_data),))
+    conn.commit()
+    conn.close()
+
+# Initialize DB on startup
+init_db()
+
 # --- Notification storage ---
 NOTIFICATION_FILE = 'notifications.log'
 
@@ -29,9 +75,7 @@ def clear_all_notifications():
         open(NOTIFICATION_FILE, 'w').close()
         return True
     return False
-import os
-import requests
-import ast
+
 # --- Telegram notification logic ---
 BOT_TOKEN = '8420940286:AAFainPEvTHoI7LfdDlTmAVgZKInH80pXyw'
 CHAT_ID = '6436641398'
@@ -51,31 +95,27 @@ def send_telegram_message(message: str, bot_token: str = BOT_TOKEN, chat_id: str
         print(f"Error sending Telegram message: {e}")
         return None
 
-def parse_and_format_notification(data: str) -> str:
+def send_telegram_async(message):
+    """Send Telegram message in a background thread to avoid blocking"""
+    threading.Thread(target=send_telegram_message, args=(message,)).start()
+
+def parse_and_format_notification(data_dict: dict) -> str:
     needs = {
         'first': 'Su ihtiyacı',
         'second': 'Klima ihtiyacı',
         'third': 'Tuvalet ihtiyacı',
         'fifth': 'SOS/Acil yardım'
     }
-    if not data:
+    if not data_dict:
         return None
-    try:
-        items = ast.literal_eval(data)
-    except Exception as e:
-        print(f"Error parsing data.txt: {e}")
-        return None
+    
     messages = []
     for key, label in needs.items():
-        if str(items.get(key)) == '1':
+        if str(data_dict.get(key)) == '1':
             messages.append(f"<b>{label}</b> bildirimi gönderildi.")
     if messages:
         return '\n'.join(messages)
     return None
-from flask import Flask, send_file, render_template_string, render_template, request, jsonify, Response
-from eeg_plot import generate_eeg_time_image, generate_eeg_freq_image
-
-app = Flask(__name__)
 
 @app.route("/")
 def home():
@@ -85,18 +125,17 @@ def home():
 def focus():
     return render_template("focus.html")
 
-@app.route('/eeg_stream1')
-def eeg_stream1():
-    return Response(generate_eeg_time_image(), mimetype='image/png')
-
-@app.route('/eeg_stream2')
-def eeg_stream2():
-    return Response(generate_eeg_freq_image(), mimetype='image/png')
+@app.route('/eeg_data')
+def eeg_data():
+    """Return JSON data for client-side rendering"""
+    current_state = get_state()
+    simulation_data = simulate_eeg_and_fft(current_state)
+    return jsonify(simulation_data)
 
 @app.route("/get_data")
 def get_data():
-    # data.txt faylını göndərir
-    return send_file("data.txt", mimetype="text/plain")
+    # Return current state as JSON
+    return jsonify(get_state())
 
 @app.route("/reset_data", methods=["GET"])
 def reset_data():
@@ -106,13 +145,13 @@ def reset_data():
         "third": 0,
         "fifth": 0
     }
-    with open("data.txt", "w", encoding="utf-8") as f:
-        f.write(str(default_data))
+    update_state(default_data)
+    
     # Send notification for system reset
     notif_msg = "<i class='fa-solid fa-info-circle'></i> Sistem başarıyla sıfırlandı."
-    send_telegram_message("<b>Sistem başarıyla sıfırlandı!</b>")
+    send_telegram_async("<b>Sistem başarıyla sıfırlandı!</b>")
     add_local_notification(notif_msg)
-    return jsonify({"status": "success", "message": "data.txt resetləndi", "data": default_data})
+    return jsonify({"status": "success", "message": "Sistem sıfırlandı", "data": default_data})
 
 @app.route("/push_data", methods=["POST"])
 def push_data():
@@ -120,18 +159,18 @@ def push_data():
     if not data:
         return jsonify({"error": "JSON göndərin"}), 400
 
-    # Write to data.txt
-    with open("data.txt", "w", encoding="utf-8") as f:
-        f.write(str(data))
+    # Update DB
+    update_state(data)
 
     # Send notification about needs
-    notif_msg = parse_and_format_notification(str(data))
+    notif_msg = parse_and_format_notification(data)
     if notif_msg:
-        send_telegram_message(notif_msg)
+        send_telegram_async(notif_msg)
         # Add each line as a notification item
         for line in notif_msg.split('\n'):
             add_local_notification(f"<i class='fa-solid fa-bell'></i> {line}")
     return jsonify({"status": "success", "data_received": data})
+
 # Endpoint to get notifications for frontend
 @app.route('/get_notifications')
 def get_notifications():
