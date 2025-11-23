@@ -223,6 +223,16 @@
   </section>
 
   <script>
+    // Detect page refresh and clear session storage
+    window.addEventListener('load', function() {
+      // Check if this is a page refresh (not navigation)
+      const navigationType = performance.getEntriesByType('navigation')[0].type;
+      if (navigationType === 'reload') {
+        // Page was refreshed - clear all session data
+        sessionStorage.clear();
+      }
+    });
+    
     // Session timer
     let startTime = 0;
     let timerInterval = null;
