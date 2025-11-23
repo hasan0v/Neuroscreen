@@ -253,17 +253,16 @@
     
     // Reset function
     function resetData() {
-      // Clear calibration flag to show calibration on next page load
-      sessionStorage.removeItem('neuroscreen_calibrated');
-      // Reset session timer
-      sessionStorage.removeItem('neuroscreen_session_start');
-      
       fetch('/reset_data')
         .then(response => response.json())
         .then(data => {
+          // Clear calibration flag and session timer BEFORE reload
+          sessionStorage.clear();
           showResetSuccessNotification();
-          // Reload page immediately to show calibration again and reset timer
-          location.reload();
+          // Force hard reload to prevent any cached data
+          setTimeout(() => {
+            window.location.href = window.location.href;
+          }, 500);
         })
         .catch(error => console.error('Error:', error));
     }
