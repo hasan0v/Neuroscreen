@@ -243,14 +243,15 @@ html, body {
   background: #ffffff; /* Pure white for chart area */
   border-radius: 20px;
   position: relative;
-  min-height: 500px;
-  padding: 0; /* Removed padding to let chart breathe */
+  height: 600px; /* Fixed height to prevent infinite loop */
+  padding: 24px; /* Restore padding */
+  overflow: hidden;
 }
 
 .eeg-displays {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
   height: 100%;
 }
 
@@ -258,7 +259,8 @@ html, body {
   flex: 1;
   position: relative;
   width: 100%;
-  min-height: 240px;
+  min-height: 0; /* Critical for flexbox scrolling/sizing */
+  overflow: hidden;
 }
 
 .eeg-display canvas {
@@ -338,17 +340,18 @@ html, body {
 }
 
 .cell {
-  aspect-ratio: 1; /* Square cards */
+  /* aspect-ratio: 1; Removed to fix size issue */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px;
+  padding: 32px; /* Reduced padding */
   cursor: pointer;
   position: relative;
   text-align: center;
   background: var(--bg-secondary);
-  border-radius: 32px; /* Extra rounded for focus cards */
+  border-radius: 32px;
+  min-height: 250px; /* Ensure consistent height without forcing square */
 }
 
 .cell:hover {
